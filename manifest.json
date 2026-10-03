@@ -2,7 +2,7 @@
   "name": "PIXORA — Your images. Your space.",
   "short_name": "PIXORA",
   "description": "Upload, compress, organize and share your images.",
-  "start_url": "/pixora",
+  "start_url": "https://pixora-m.netlify.app/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
