@@ -1,0 +1,2292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIXORA — Your images. Your space.</title>
+<meta name="description" content="PIXORA — Upload, compress, organize and share your images.">
+<meta name="theme-color" content="#070b14">
+<link rel="icon" type="image/png" href="https://i.ibb.co/jP5Nmvgw/file-00000000031882119d721429cf3de75c.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+<style>
+:root{
+  --bg-dark:#070b14;--bg-elev:#0b1220;--bg-card:rgba(15,23,42,.6);
+  --border-color:rgba(255,255,255,.08);--border-highlight:rgba(59,130,246,.35);
+  --primary:#3b82f6;--primary-glow:rgba(59,130,246,.4);--secondary:#8b5cf6;--accent:#06b6d4;
+  --text-main:#f8fafc;--text-muted:#94a3b8;--text-dim:#64748b;
+  --success:#10b981;--danger:#ef4444;--warning:#f59e0b;
+  --radius-sm:8px;--radius:16px;--radius-lg:24px;
+  --shadow-sm:0 4px 6px -1px rgba(0,0,0,.2);--shadow-md:0 10px 25px -3px rgba(0,0,0,.3);
+  --shadow-lg:0 25px 50px -12px rgba(0,0,0,.6);--shadow-glow:0 0 25px var(--primary-glow);
+  --t:all .3s cubic-bezier(.4,0,.2,1);--container:1240px;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',system-ui,sans-serif}
+html{scroll-behavior:smooth}
+body{background-color:var(--bg-dark);
+  background-image:radial-gradient(circle at 15% 20%,rgba(59,130,246,.10),transparent 30%),
+    radial-gradient(circle at 85% 70%,rgba(139,92,246,.10),transparent 30%);
+  background-attachment:fixed;min-height:100vh;color:var(--text-main);line-height:1.65;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:var(--bg-dark)}
+::-webkit-scrollbar-thumb{background:#1e293b;border-radius:6px}
+::-webkit-scrollbar-thumb:hover{background:var(--primary)}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit}
+.container{max-width:var(--container);margin:0 auto;padding:0 24px}
+.hidden{display:none!important}
+.text-grad{background:linear-gradient(135deg,#fff 20%,#94a3b8 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.text-primary-grad{background:linear-gradient(135deg,var(--primary),var(--secondary),var(--accent));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 26px;
+  background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;border:none;
+  border-radius:var(--radius-sm);font-weight:600;font-size:15px;cursor:pointer;transition:var(--t);
+  box-shadow:0 4px 15px rgba(59,130,246,.3);white-space:nowrap}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(59,130,246,.45)}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-lg{padding:16px 34px;font-size:16px;border-radius:12px}
+.btn-sm{padding:8px 16px;font-size:13px;border-radius:8px}
+.btn-outline{background:transparent;border:1px solid var(--border-color);color:var(--text-main);box-shadow:none}
+.btn-outline:hover{border-color:var(--primary);background:rgba(59,130,246,.1);box-shadow:none}
+.btn-danger{background:linear-gradient(135deg,#ef4444,#b91c1c);box-shadow:0 4px 15px rgba(239,68,68,.3)}
+.btn-success{background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 15px rgba(16,185,129,.3)}
+.btn-ghost{background:rgba(255,255,255,.05);border:1px solid var(--border-color);color:var(--text-main)}
+.btn-ghost:hover{background:rgba(255,255,255,.1);border-color:var(--border-highlight)}
+.btn-block{width:100%}
+
+.nav{position:fixed;top:0;left:0;right:0;z-index:900;transition:var(--t);
+  background:rgba(7,11,20,.7);backdrop-filter:blur(16px);border-bottom:1px solid transparent}
+.nav.scrolled{background:rgba(7,11,20,.92);border-bottom-color:var(--border-color)}
+.nav-inner{max-width:var(--container);margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.nav-logo{display:flex;align-items:center;gap:12px;cursor:pointer}
+.nav-logo img{height:38px;border-radius:50%;filter:drop-shadow(0 0 10px rgba(59,130,246,.5))}
+.nav-logo b{font-size:20px;font-weight:800;letter-spacing:1px}
+.nav-logo small{display:block;color:var(--primary);font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-top:-2px}
+.nav-links{display:flex;align-items:center;gap:8px}
+.nav-links a{padding:9px 16px;border-radius:10px;font-size:14px;font-weight:500;color:var(--text-muted);transition:var(--t)}
+.nav-links a:hover{color:var(--text-main);background:rgba(255,255,255,.05)}
+.nav-cta{display:flex;gap:10px;align-items:center}
+.nav-toggle{display:none;background:none;border:none;color:var(--text-main);font-size:22px;cursor:pointer;padding:8px}
+
+.hero{padding:150px 0 80px;position:relative;overflow:hidden}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;
+  background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.3);color:#93c5fd;
+  font-size:13px;font-weight:500;margin-bottom:24px}
+.hero h1{font-size:clamp(38px,6vw,68px);font-weight:800;line-height:1.05;letter-spacing:-.02em;margin-bottom:24px}
+.hero p.lead{font-size:clamp(16px,1.5vw,19px);color:var(--text-muted);max-width:620px;margin-bottom:36px}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:50px}
+.hero-meta{display:flex;gap:32px;flex-wrap:wrap;color:var(--text-dim);font-size:14px}
+.hero-meta div{display:flex;align-items:center;gap:8px}
+.hero-meta i{color:var(--success)}
+.hero-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:60px;align-items:center}
+.hero-visual{position:relative}
+.hero-visual-inner{position:relative;border-radius:var(--radius-lg);overflow:hidden;
+  border:1px solid var(--border-color);background:var(--bg-card);backdrop-filter:blur(20px);
+  box-shadow:var(--shadow-lg),0 0 60px rgba(59,130,246,.2);transform:perspective(1200px) rotateY(-6deg) rotateX(3deg);transition:var(--t)}
+.hero-visual-inner:hover{transform:perspective(1200px) rotateY(0) rotateX(0)}
+.floating-card{position:absolute;background:var(--bg-card);border:1px solid var(--border-color);
+  border-radius:14px;padding:14px 18px;backdrop-filter:blur(20px);box-shadow:var(--shadow-md);
+  display:flex;align-items:center;gap:12px;font-size:13px;font-weight:600;animation:float 6s ease-in-out infinite}
+.fc-1{top:20px;right:-20px;color:var(--success)}
+.fc-2{bottom:30px;left:-30px;color:var(--accent);animation-delay:-3s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+
+section{padding:80px 0}
+.section-head{text-align:center;max-width:720px;margin:0 auto 60px}
+.section-head .eyebrow{display:inline-block;padding:6px 14px;border-radius:999px;background:rgba(59,130,246,.1);
+  border:1px solid rgba(59,130,246,.25);color:#93c5fd;font-size:12px;font-weight:600;letter-spacing:1px;
+  text-transform:uppercase;margin-bottom:18px}
+.section-head h2{font-size:clamp(30px,4vw,46px);font-weight:800;letter-spacing:-.02em;margin-bottom:16px;line-height:1.15}
+.section-head p{color:var(--text-muted);font-size:17px}
+
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+.feature{background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);
+  padding:32px;transition:var(--t);backdrop-filter:blur(20px)}
+.feature:hover{transform:translateY(-6px);border-color:var(--border-highlight);box-shadow:var(--shadow-md),var(--shadow-glow)}
+.feature-icon{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;margin-bottom:22px}
+.fi-1{background:linear-gradient(135deg,#3b82f6,#2563eb);box-shadow:0 0 20px rgba(59,130,246,.4)}
+.fi-2{background:linear-gradient(135deg,#8b5cf6,#6d28d9);box-shadow:0 0 20px rgba(139,92,246,.4)}
+.fi-3{background:linear-gradient(135deg,#06b6d4,#0891b2);box-shadow:0 0 20px rgba(6,182,212,.4)}
+.fi-4{background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 0 20px rgba(16,185,129,.4)}
+.fi-5{background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 0 20px rgba(245,158,11,.4)}
+.fi-6{background:linear-gradient(135deg,#ec4899,#db2777);box-shadow:0 0 20px rgba(236,72,153,.4)}
+.feature h3{font-size:19px;font-weight:700;margin-bottom:10px}
+.feature p{color:var(--text-muted);font-size:14.5px;line-height:1.7}
+
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:30px}
+.step{text-align:center}
+.step-num{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));
+  display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;
+  margin:0 auto 22px;box-shadow:0 0 30px var(--primary-glow);border:3px solid var(--bg-dark)}
+.step h3{font-size:18px;font-weight:700;margin-bottom:10px}
+.step p{color:var(--text-muted);font-size:14.5px;max-width:260px;margin:0 auto}
+
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:26px;max-width:1100px;margin:0 auto}
+.plan{background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);
+  padding:36px 30px;transition:var(--t);backdrop-filter:blur(20px);position:relative}
+.plan.featured{border-color:var(--primary);box-shadow:0 0 40px rgba(59,130,246,.25);transform:scale(1.03)}
+.plan.featured::before{content:'MOST POPULAR';position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,var(--primary),var(--secondary));padding:5px 16px;border-radius:999px;
+  font-size:11px;font-weight:700;letter-spacing:1px;color:#fff;white-space:nowrap}
+.plan-name{font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--primary);margin-bottom:14px}
+.plan-price{font-size:44px;font-weight:800;line-height:1;margin-bottom:6px}
+.plan-price small{font-size:15px;color:var(--text-muted);font-weight:500}
+.plan-desc{color:var(--text-muted);font-size:14px;margin-bottom:26px;min-height:40px}
+.plan ul{list-style:none;margin-bottom:30px}
+.plan ul li{display:flex;align-items:flex-start;gap:12px;padding:9px 0;font-size:14.5px;color:var(--text-muted)}
+.plan ul li i{color:var(--success);margin-top:5px;font-size:13px}
+.plan ul li.disabled{opacity:.45}
+.plan ul li.disabled i{color:var(--text-dim)}
+
+.faq-list{max-width:800px;margin:0 auto}
+.faq{background:var(--bg-card);border:1px solid var(--border-color);border-radius:14px;margin-bottom:14px;overflow:hidden;transition:var(--t)}
+.faq.open{border-color:var(--border-highlight);background:rgba(15,23,42,.8)}
+.faq-q{padding:22px 26px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:16px;gap:20px;user-select:none}
+.faq-q i{transition:var(--t);color:var(--primary);flex-shrink:0}
+.faq.open .faq-q i{transform:rotate(180deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease;color:var(--text-muted);font-size:14.5px}
+.faq.open .faq-a{max-height:400px}
+.faq-a-inner{padding:0 26px 24px;line-height:1.75}
+
+.cta-band{background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.15));
+  border:1px solid var(--border-highlight);border-radius:var(--radius-lg);padding:60px 40px;text-align:center;backdrop-filter:blur(20px)}
+.cta-band h2{font-size:clamp(28px,4vw,40px);font-weight:800;margin-bottom:14px}
+.cta-band p{color:var(--text-muted);font-size:17px;max-width:600px;margin:0 auto 30px}
+
+footer{background:rgba(0,0,0,.4);border-top:1px solid var(--border-color);margin-top:80px;padding:60px 0 24px}
+.footer-grid{display:grid;grid-template-columns:1.5fr repeat(3,1fr);gap:50px;margin-bottom:50px}
+.footer-brand img{height:52px;border-radius:50%;margin-bottom:16px}
+.footer-brand p{color:var(--text-muted);font-size:14.5px;max-width:320px;margin-bottom:22px;line-height:1.7}
+.footer-social{display:flex;gap:10px}
+.footer-social a{width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.05);
+  border:1px solid var(--border-color);display:flex;align-items:center;justify-content:center;color:var(--text-muted);transition:var(--t)}
+.footer-social a:hover{background:var(--primary);border-color:var(--primary);color:#fff;transform:translateY(-3px)}
+.footer-col h4{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:20px}
+.footer-col a{display:block;color:var(--text-muted);font-size:14.5px;padding:7px 0;transition:var(--t)}
+.footer-col a:hover{color:var(--primary);padding-left:6px}
+.footer-bottom{border-top:1px solid var(--border-color);padding-top:24px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;color:var(--text-dim);font-size:13.5px}
+.footer-bottom a{color:var(--primary);font-weight:600}
+.footer-bottom a:hover{text-decoration:underline}
+
+.auth-wrap{display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
+.auth-aside{background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.15));
+  border-right:1px solid var(--border-color);padding:60px;display:flex;flex-direction:column;justify-content:center}
+.auth-aside-inner{position:relative;z-index:1;max-width:460px}
+.auth-aside h2{font-size:clamp(28px,3.5vw,42px);font-weight:800;line-height:1.15;margin-bottom:20px}
+.auth-aside p{color:var(--text-muted);font-size:16px;margin-bottom:36px;line-height:1.7}
+.auth-feature{display:flex;gap:14px;margin-bottom:22px;align-items:flex-start}
+.auth-feature i{width:40px;height:40px;border-radius:10px;background:rgba(59,130,246,.15);
+  border:1px solid rgba(59,130,246,.3);color:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+.auth-feature b{display:block;font-size:15px;margin-bottom:2px}
+.auth-feature span{color:var(--text-muted);font-size:13.5px}
+.auth-form-side{display:flex;align-items:center;justify-content:center;padding:40px 24px;background:var(--bg-dark)}
+.auth-card{width:100%;max-width:440px}
+.auth-header{text-align:center;margin-bottom:30px}
+.auth-header h2{font-size:28px;font-weight:700;margin-bottom:8px}
+.auth-header p{color:var(--text-muted);font-size:15px}
+.auth-toggle{text-align:center;margin-top:22px;font-size:14px;color:var(--text-muted)}
+.auth-toggle a{color:var(--primary);font-weight:600;margin-left:4px}
+.auth-error{color:#fca5a5;margin-top:16px;text-align:center;font-size:13.5px;background:rgba(239,68,68,.1);
+  border:1px solid rgba(239,68,68,.25);padding:12px;border-radius:8px;display:none}
+.forgot-link{display:block;text-align:right;font-size:13px;color:var(--text-muted);margin-top:-10px;margin-bottom:20px}
+.forgot-link:hover{color:var(--primary)}
+.pwd-wrap{position:relative}
+.pwd-wrap .toggle-pwd{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:15px;padding:4px}
+@media(max-width:960px){.auth-wrap{grid-template-columns:1fr}.auth-aside{display:none}}
+
+.form-group{margin-bottom:20px}
+.form-label{display:block;margin-bottom:8px;font-weight:500;font-size:13.5px;color:var(--text-muted)}
+.form-label .req{color:var(--danger)}
+.form-control{width:100%;padding:14px 18px;background:rgba(0,0,0,.35);border:1px solid var(--border-color);
+  border-radius:var(--radius-sm);font-size:15px;color:var(--text-main);transition:var(--t);font-family:inherit}
+.form-control:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-glow);outline:none;background:rgba(0,0,0,.55)}
+.form-control::placeholder{color:rgba(148,163,184,.5)}
+textarea.form-control{resize:vertical;min-height:90px}
+select.form-control{cursor:pointer}
+small.hint{color:var(--text-dim);font-size:12px;display:block;margin-top:5px}
+
+.app-shell{display:none}
+.app-header{position:sticky;top:0;z-index:800;background:rgba(7,11,20,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border-color)}
+.app-header-inner{max-width:var(--container);margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.app-logo{display:flex;align-items:center;gap:12px;cursor:pointer}
+.app-logo img{height:40px;border-radius:50%;filter:drop-shadow(0 0 10px rgba(59,130,246,.5))}
+.app-logo b{font-size:20px;font-weight:800;letter-spacing:1px}
+.app-logo small{display:block;color:var(--primary);font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-top:-2px}
+.user-block{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.user-meta{display:flex;align-items:center;gap:12px}
+.user-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));
+  display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;overflow:hidden;border:2px solid rgba(255,255,255,.1);box-shadow:var(--shadow-glow);font-size:15px}
+.user-avatar img{width:100%;height:100%;object-fit:cover}
+.user-name{font-weight:600;font-size:14px;line-height:1.2}
+.user-email{font-size:12px;color:var(--text-muted)}
+.plan-pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.5px;padding:3px 10px;border-radius:999px;text-transform:uppercase;margin-top:3px}
+.plan-pill.free{background:rgba(148,163,184,.15);color:#cbd5e1}
+.plan-pill.pro{background:linear-gradient(135deg,rgba(59,130,246,.25),rgba(139,92,246,.25));color:#c4b5fd;border:1px solid rgba(139,92,246,.4)}
+.plan-pill.business{background:linear-gradient(135deg,rgba(245,158,11,.25),rgba(236,72,153,.25));color:#fcd34d;border:1px solid rgba(245,158,11,.4)}
+.plan-pill.expired{background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.35)}
+.icon-btn{width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid var(--border-color);
+  color:var(--text-muted);cursor:pointer;transition:var(--t);display:flex;align-items:center;justify-content:center;font-size:15px}
+.icon-btn:hover{color:var(--text-main);border-color:var(--primary);background:rgba(59,130,246,.1)}
+.icon-btn.admin{background:linear-gradient(135deg,rgba(245,158,11,.15),rgba(239,68,68,.15));color:#fcd34d;border-color:rgba(245,158,11,.3)}
+.icon-btn.admin:hover{background:linear-gradient(135deg,rgba(245,158,11,.3),rgba(239,68,68,.3));border-color:var(--warning)}
+
+.app-main{padding:28px 0 80px}
+.app-tabs{display:flex;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);
+  padding:6px;gap:6px;margin-bottom:26px;backdrop-filter:blur(20px);overflow-x:auto;scrollbar-width:thin}
+.app-tab{flex:1;min-width:110px;padding:13px 16px;text-align:center;cursor:pointer;border-radius:10px;
+  font-weight:600;font-size:14px;color:var(--text-muted);transition:var(--t);display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid transparent;background:none;font-family:inherit;white-space:nowrap}
+.app-tab.active{color:var(--text-main);background:rgba(255,255,255,.06);border-color:var(--border-color)}
+.app-tab:hover:not(.active){color:var(--text-main);background:rgba(255,255,255,.03)}
+.tab-pane{display:none}
+.tab-pane.active{display:block;animation:slideUp .35s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+.card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);
+  overflow:hidden;margin-bottom:24px;backdrop-filter:blur(20px);box-shadow:var(--shadow-sm)}
+.card-head{padding:20px 28px;border-bottom:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;background:rgba(0,0,0,.2)}
+.card-title{font-size:17px;font-weight:700;display:flex;align-items:center;gap:10px}
+.card-title i{color:var(--primary)}
+.card-body{padding:28px}
+.card-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+.upload-area{border:2px dashed rgba(255,255,255,.15);border-radius:var(--radius);padding:56px 30px;
+  text-align:center;transition:var(--t);cursor:pointer;background:rgba(0,0,0,.2);margin-bottom:26px}
+.upload-area:hover,.upload-area.drag{border-color:var(--primary);background:rgba(59,130,246,.06)}
+.upload-icon{font-size:50px;color:var(--primary);margin-bottom:18px;filter:drop-shadow(0 0 12px var(--primary-glow))}
+.upload-area h3{font-size:20px;margin-bottom:8px;font-weight:600}
+.upload-area p{color:var(--text-muted);margin-bottom:20px;font-size:14px}
+
+.preview-container{margin-top:26px}
+.preview-container.hidden{display:none!important}
+.preview-image{max-width:100%;max-height:520px;margin:0 auto;border-radius:var(--radius);box-shadow:var(--shadow-md);border:1px solid var(--border-color)}
+.thumb-strip{display:flex;gap:12px;overflow-x:auto;padding:14px 0;margin-top:14px}
+.thumb-item{flex-shrink:0;width:80px;height:80px;border-radius:10px;overflow:hidden;border:2px solid transparent;cursor:pointer;transition:var(--t);position:relative}
+.thumb-item.active{border-color:var(--primary);box-shadow:0 0 12px var(--primary-glow)}
+.thumb-item img{width:100%;height:100%;object-fit:cover}
+.thumb-item.uploaded{border-color:var(--success)}
+.thumb-item.uploaded::after{content:'\f00c';font-family:'Font Awesome 6 Free';font-weight:900;position:absolute;top:4px;right:4px;background:var(--success);color:#fff;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px}
+.thumb-item.failed{border-color:var(--danger)}
+.thumb-item.failed::after{content:'\f00d';font-family:'Font Awesome 6 Free';font-weight:900;position:absolute;top:4px;right:4px;background:var(--danger);color:#fff;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px}
+
+.size-panel{margin:22px 0;padding:24px;background:rgba(0,0,0,.3);border-radius:var(--radius);border:1px solid var(--border-color)}
+.size-head{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.size-head h4{font-size:15.5px;font-weight:700}
+.size-head i{color:var(--accent);font-size:20px}
+.slider-row{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.slider-row .lbl{font-size:12px;color:var(--text-dim);min-width:36px}
+input[type=range]{flex:1;height:6px;-webkit-appearance:none;appearance:none;
+  background:linear-gradient(90deg,var(--accent),var(--primary),var(--secondary));border-radius:3px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;
+  background:#fff;cursor:pointer;border:3px solid var(--primary);box-shadow:0 0 10px var(--primary-glow)}
+.size-value{background:rgba(255,255,255,.08);padding:6px 14px;border-radius:999px;font-weight:700;min-width:64px;text-align:center;font-size:13.5px;border:1px solid var(--border-color)}
+.preset-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.preset-btn{padding:6px 16px;border-radius:999px;border:1px solid var(--border-color);background:transparent;
+  color:var(--text-muted);cursor:pointer;font-size:12.5px;font-weight:600;transition:var(--t);font-family:inherit}
+.preset-btn:hover{border-color:var(--primary);color:var(--text-main)}
+.preset-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.quality-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.quality-row label{font-weight:500;font-size:13.5px;color:var(--text-muted)}
+.quality-row select{padding:8px 14px;border-radius:var(--radius-sm);border:1px solid var(--border-color);
+  background:rgba(0,0,0,.5);color:var(--text-main);font-size:13.5px;cursor:pointer;outline:none;font-family:inherit}
+.size-info{display:flex;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--text-muted)}
+.size-info span{background:rgba(0,0,0,.4);padding:6px 12px;border-radius:999px;border:1px solid var(--border-color)}
+.size-info strong{color:var(--text-main)}
+
+.info-block{margin-top:22px;padding:20px;background:rgba(0,0,0,.25);border-radius:var(--radius);border:1px solid var(--border-color)}
+.info-block h4{margin-bottom:14px;font-size:14px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.info-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--border-color);font-size:13.5px;gap:14px}
+.info-item:last-child{border-bottom:none}
+.info-item span:first-child{color:var(--text-muted);flex-shrink:0}
+.info-item span:last-child{font-weight:500;text-align:right;word-break:break-word}
+
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-bottom:24px}
+.stat-card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);
+  padding:22px;display:flex;align-items:center;gap:16px;transition:var(--t);backdrop-filter:blur(20px)}
+.stat-card:hover{transform:translateY(-4px);border-color:var(--border-highlight);box-shadow:var(--shadow-glow)}
+.stat-icon{width:54px;height:54px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;flex-shrink:0}
+.stat-icon.primary{background:linear-gradient(135deg,#3b82f6,#2563eb);box-shadow:0 0 15px rgba(59,130,246,.4)}
+.stat-icon.success{background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 0 15px rgba(16,185,129,.4)}
+.stat-icon.warning{background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 0 15px rgba(245,158,11,.4)}
+.stat-icon.danger{background:linear-gradient(135deg,#ec4899,#db2777);box-shadow:0 0 15px rgba(236,72,153,.4)}
+.stat-info h3{font-size:24px;font-weight:800;margin-bottom:2px;line-height:1}
+.stat-info p{color:var(--text-muted);font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:22px}
+.gallery-item{border-radius:var(--radius);overflow:hidden;background:var(--bg-card);border:1px solid var(--border-color);transition:var(--t);cursor:pointer;position:relative}
+.gallery-item:hover{transform:translateY(-6px);box-shadow:0 15px 30px rgba(0,0,0,.5),var(--shadow-glow);border-color:var(--border-highlight)}
+.gallery-thumb{position:relative;aspect-ratio:4/3;overflow:hidden;background:#0b1220}
+.gallery-thumb img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.gallery-item:hover .gallery-thumb img{transform:scale(1.06)}
+.gallery-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.85),transparent 55%);
+  opacity:0;transition:var(--t);display:flex;align-items:flex-end;padding:16px;gap:10px}
+.gallery-item:hover .gallery-overlay{opacity:1}
+.overlay-btn{width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.2);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:var(--t)}
+.overlay-btn:hover{background:var(--primary);border-color:var(--primary)}
+.gallery-info{padding:16px 18px}
+.gallery-title{font-weight:600;font-size:15px;margin-bottom:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gallery-desc{color:var(--text-muted);font-size:12.5px;margin-bottom:11px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:32px}
+.gallery-meta{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--text-dim)}
+.badge{background:rgba(59,130,246,.15);color:#93c5fd;padding:3px 10px;border-radius:999px;font-weight:600;font-size:11px;text-transform:capitalize}
+
+.empty-state{text-align:center;padding:60px 20px;color:var(--text-muted);grid-column:1/-1}
+.empty-state i{font-size:52px;margin-bottom:18px;color:var(--primary);opacity:.6}
+.empty-state h3{font-size:19px;color:var(--text-main);margin-bottom:8px}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:20px}
+.modal.active{display:flex;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-content{background:var(--bg-elev);border:1px solid var(--border-color);border-radius:var(--radius-lg);
+  max-width:820px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:scaleIn .3s ease}
+@keyframes scaleIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+.modal-head{padding:20px 28px;border-bottom:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--bg-elev);z-index:2}
+.modal-title{font-size:19px;font-weight:700}
+.modal-close{background:none;border:none;font-size:26px;line-height:1;cursor:pointer;color:var(--text-muted);transition:var(--t);padding:0;width:32px;height:32px;border-radius:8px}
+.modal-close:hover{color:var(--danger);background:rgba(239,68,68,.1)}
+.modal-body{padding:28px}
+.modal-img{width:100%;border-radius:var(--radius-sm);box-shadow:var(--shadow-md);margin-bottom:22px}
+.modal-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:1100;display:none;align-items:center;justify-content:center;padding:30px}
+.lightbox.active{display:flex;animation:fadeIn .25s ease}
+.lightbox img{max-width:96vw;max-height:88vh;border-radius:12px;box-shadow:0 25px 60px rgba(0,0,0,.7)}
+.lightbox-close{position:absolute;top:22px;right:26px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  width:44px;height:44px;border-radius:50%;color:#fff;cursor:pointer;font-size:20px;transition:var(--t)}
+.lightbox-close:hover{background:var(--danger);border-color:var(--danger);transform:rotate(90deg)}
+
+.toast-wrap{position:fixed;top:20px;right:20px;z-index:2000;display:flex;flex-direction:column;gap:10px;max-width:360px;pointer-events:none}
+.toast{background:var(--bg-elev);border:1px solid var(--border-color);border-left:4px solid var(--primary);
+  border-radius:12px;padding:14px 18px;box-shadow:var(--shadow-lg);display:flex;gap:12px;align-items:flex-start;animation:toastIn .3s ease;pointer-events:auto;min-width:260px}
+.toast.success{border-left-color:var(--success)}
+.toast.error{border-left-color:var(--danger)}
+.toast.warn{border-left-color:var(--warning)}
+.toast i{font-size:17px;margin-top:2px}
+.toast.success i{color:var(--success)}
+.toast.error i{color:var(--danger)}
+.toast.warn i{color:var(--warning)}
+.toast.info i{color:var(--primary)}
+.toast-body{flex:1}
+.toast-title{font-weight:600;font-size:14px;margin-bottom:2px}
+.toast-msg{font-size:13px;color:var(--text-muted);line-height:1.5}
+.toast-close{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:16px;padding:0;align-self:flex-start}
+@keyframes toastIn{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:translateX(0)}}
+
+.cookie-banner{position:fixed;bottom:0;left:0;right:0;background:var(--bg-elev);border-top:1px solid var(--border-color);
+  padding:18px 24px;z-index:950;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;box-shadow:0 -10px 30px rgba(0,0,0,.4);backdrop-filter:blur(20px)}
+.cookie-banner p{font-size:13.5px;color:var(--text-muted);max-width:760px;margin:0}
+.cookie-banner a{color:var(--primary);font-weight:600}
+.cookie-actions{display:flex;gap:10px;flex-shrink:0}
+
+.back-top{position:fixed;bottom:24px;right:24px;width:46px;height:46px;border-radius:12px;
+  background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;border:none;cursor:pointer;font-size:17px;
+  box-shadow:var(--shadow-md),0 0 20px rgba(59,130,246,.4);z-index:900;opacity:0;visibility:hidden;transition:var(--t)}
+.back-top.show{opacity:1;visibility:visible}
+.back-top:hover{transform:translateY(-4px)}
+
+.page-wrap{display:none;padding:120px 0 80px}
+.page-wrap.active{display:block}
+.legal{max-width:800px;margin:0 auto;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);padding:50px 44px;backdrop-filter:blur(20px)}
+.legal h1{font-size:34px;font-weight:800;margin-bottom:10px}
+.legal .updated{color:var(--text-dim);font-size:13px;margin-bottom:30px}
+.legal h2{font-size:20px;font-weight:700;margin:28px 0 12px}
+.legal p,.legal li{color:var(--text-muted);font-size:15px;line-height:1.8;margin-bottom:12px}
+.legal ul{margin-left:22px;margin-bottom:14px}
+.legal a{color:var(--primary);font-weight:600}
+
+.contact-grid{display:grid;grid-template-columns:1fr 1.3fr;gap:40px;max-width:1000px;margin:0 auto}
+.contact-info{background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);padding:36px;backdrop-filter:blur(20px)}
+.contact-info h3{font-size:22px;font-weight:700;margin-bottom:14px}
+.contact-info p{color:var(--text-muted);margin-bottom:24px;font-size:14.5px;line-height:1.7}
+.contact-item{display:flex;gap:14px;margin-bottom:18px;align-items:flex-start}
+.contact-item i{width:40px;height:40px;border-radius:10px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);color:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.contact-item b{display:block;font-size:14px;margin-bottom:2px}
+.contact-item span{color:var(--text-muted);font-size:13.5px}
+.contact-form{background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);padding:36px;backdrop-filter:blur(20px)}
+@media(max-width:820px){.contact-grid{grid-template-columns:1fr}}
+
+.about-hero{text-align:center;max-width:760px;margin:0 auto 60px}
+.about-hero h1{font-size:clamp(32px,4.5vw,48px);font-weight:800;margin-bottom:18px;line-height:1.15}
+.about-hero p{color:var(--text-muted);font-size:17px;line-height:1.75}
+.about-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px;max-width:1000px;margin:0 auto}
+.about-card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);padding:30px;backdrop-filter:blur(20px);transition:var(--t)}
+.about-card:hover{border-color:var(--border-highlight);transform:translateY(-4px)}
+.about-card i{font-size:26px;color:var(--primary);margin-bottom:16px}
+.about-card h3{font-size:17px;font-weight:700;margin-bottom:10px}
+.about-card p{color:var(--text-muted);font-size:14px;line-height:1.7}
+.dev-credit{display:flex;align-items:center;gap:14px;padding:16px 20px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:14px;margin-top:30px;flex-wrap:wrap}
+.dev-credit i{font-size:22px;color:var(--primary)}
+.dev-credit a{color:var(--primary);font-weight:700}
+
+.plan-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px;margin-bottom:26px}
+.plan-card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);
+  padding:28px;transition:var(--t);backdrop-filter:blur(20px);position:relative}
+.plan-card.current{border-color:var(--success);box-shadow:0 0 30px rgba(16,185,129,.2)}
+.plan-card.current::before{content:'YOUR PLAN';position:absolute;top:-11px;left:20px;background:var(--success);padding:4px 12px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:1px;color:#fff}
+.plan-card h3{font-size:22px;font-weight:800;margin-bottom:6px;text-transform:capitalize}
+.plan-card .price{font-size:34px;font-weight:800;color:var(--primary);margin-bottom:4px}
+.plan-card .price small{font-size:14px;color:var(--text-muted);font-weight:500}
+.plan-card .duration{color:var(--text-dim);font-size:12.5px;margin-bottom:16px}
+.plan-card ul{list-style:none;margin-bottom:20px}
+.plan-card ul li{display:flex;gap:10px;padding:6px 0;font-size:13.5px;color:var(--text-muted)}
+.plan-card ul li i{color:var(--success);margin-top:4px;font-size:12px}
+
+.pay-method{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.pay-method label{flex:1;min-width:160px;cursor:pointer}
+.pay-method input{display:none}
+.pay-method .method-box{padding:18px;border:2px solid var(--border-color);border-radius:14px;text-align:center;transition:var(--t);background:rgba(0,0,0,.2)}
+.pay-method input:checked + .method-box{border-color:var(--primary);background:rgba(59,130,246,.1);box-shadow:0 0 20px rgba(59,130,246,.2)}
+.method-box i{font-size:26px;margin-bottom:10px;display:block;color:var(--primary)}
+.method-box b{display:block;font-size:15px;margin-bottom:2px}
+.method-box small{color:var(--text-dim);font-size:12px}
+.method-box.nagad i{color:#ec1c24}
+.method-box.bkash i{color:#e2136e}
+.method-box.rocket i{color:#8c3494}
+
+.recipient-box{background:linear-gradient(135deg,rgba(16,185,129,.1),rgba(59,130,246,.1));border:1px solid rgba(16,185,129,.3);border-radius:14px;padding:20px;margin-bottom:20px}
+.recipient-box .label{font-size:12px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.recipient-box .number{font-size:26px;font-weight:800;color:#6ee7b7;letter-spacing:2px;margin-bottom:4px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.recipient-box .number button{background:rgba(255,255,255,.1);border:1px solid var(--border-color);color:#fff;
+  width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:14px;transition:var(--t)}
+.recipient-box .number button:hover{background:var(--primary);border-color:var(--primary)}
+.recipient-box .hint{font-size:13px;color:var(--text-muted)}
+
+.order-row{background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;padding:18px;margin-bottom:12px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+.order-info{flex:1;min-width:200px}
+.order-info b{display:block;font-size:15px;margin-bottom:4px}
+.order-info small{color:var(--text-muted);font-size:12.5px;display:block;line-height:1.6}
+.status-pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;letter-spacing:.5px;padding:5px 12px;border-radius:999px;text-transform:uppercase}
+.status-pill.pending{background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.3)}
+.status-pill.approved{background:rgba(16,185,129,.15);color:#6ee7b7;border:1px solid rgba(16,185,129,.3)}
+.status-pill.rejected{background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3)}
+
+@media(max-width:960px){
+  .hero-grid{grid-template-columns:1fr;gap:40px}
+  .hero-visual-inner{transform:none}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:36px}
+}
+@media(max-width:768px){
+  section{padding:60px 0}
+  .hero{padding:120px 0 60px}
+  .nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:rgba(7,11,20,.98);
+    flex-direction:column;padding:16px;border-bottom:1px solid var(--border-color);align-items:stretch}
+  .nav-links.open{display:flex}
+  .nav-toggle{display:block}
+  .nav-cta .btn-ghost{display:none}
+  .footer-grid{grid-template-columns:1fr;gap:30px}
+  .legal{padding:32px 22px}
+  .modal-body,.card-body{padding:20px}
+  .card-head{padding:16px 20px}
+  .app-tab{min-width:90px;font-size:12.5px;padding:10px 10px}
+  .stat-card{padding:16px}
+  .stat-icon{width:44px;height:44px;font-size:18px}
+  .stat-info h3{font-size:18px}
+  .app-header-inner{padding:12px 16px}
+  .toast-wrap{left:16px;right:16px;max-width:none}
+  .cookie-banner{padding:14px 16px}
+  .recipient-box .number{font-size:22px}
+  .info-grid{grid-template-columns:1fr!important}
+  .pay-form-grid{grid-template-columns:1fr!important}
+}
+</style>
+</head>
+<body>
+
+<div class="toast-wrap" id="toastWrap"></div>
+<button class="back-top" id="backTop"><i class="fas fa-arrow-up"></i></button>
+
+<!-- ==================== PUBLIC SITE ==================== -->
+<div id="publicSite">
+  <nav class="nav" id="mainNav">
+    <div class="nav-inner">
+      <div class="nav-logo" onclick="scrollTo({top:0,behavior:'smooth'})">
+        <img src="https://i.ibb.co/jP5Nmvgw/file-00000000031882119d721429cf3de75c.png" alt="PIXORA">
+        <div><b>PIXORA</b><small>Your images. Your space.</small></div>
+      </div>
+      <div class="nav-links" id="navLinks">
+        <a href="#features" data-nav>Features</a>
+        <a href="#how" data-nav>How it works</a>
+        <a href="#pricing" data-nav>Pricing</a>
+        <a href="#faq" data-nav>FAQ</a>
+        <a href="#" data-page="about">About</a>
+        <a href="#" data-page="contact">Contact</a>
+      </div>
+      <div class="nav-cta">
+        <button class="btn btn-ghost btn-sm" onclick="openAuth('login')">Sign in</button>
+        <button class="btn btn-sm" onclick="openAuth('register')"><i class="fas fa-rocket"></i> Get started</button>
+        <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+      </div>
+    </div>
+  </nav>
+
+  <div id="page-home" class="page-wrap active" style="padding-top:0">
+    <section class="hero">
+      <div class="container">
+        <div class="hero-grid">
+          <div>
+            <div class="hero-badge"><i class="fas fa-bolt"></i> Fast • Secure • Beautiful</div>
+            <h1 class="text-grad">Your images.<br><span class="text-primary-grad">Your space.</span></h1>
+            <p class="lead">Upload, compress, organize and share your images with a beautifully simple platform built for creators, photographers and teams.</p>
+            <div class="hero-cta">
+              <button class="btn btn-lg" onclick="openAuth('register')"><i class="fas fa-rocket"></i> Start free</button>
+              <button class="btn btn-lg btn-outline" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})"><i class="fas fa-play"></i> See how it works</button>
+            </div>
+            <div class="hero-meta">
+              <div><i class="fas fa-check-circle"></i> Unlimited uploads</div>
+              <div><i class="fas fa-check-circle"></i> Smart compression</div>
+              <div><i class="fas fa-check-circle"></i> 32MB per file</div>
+            </div>
+          </div>
+          <div class="hero-visual">
+            <div class="hero-visual-inner"><img src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=900&q=80" alt="PIXORA"></div>
+            <div class="floating-card fc-1"><i class="fas fa-bolt"></i> Uploaded in 0.8s</div>
+            <div class="floating-card fc-2"><i class="fas fa-compress"></i> Saved 72% size</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features">
+      <div class="container">
+        <div class="section-head"><span class="eyebrow">Features</span><h2>Everything you need to <span class="text-primary-grad">manage images</span></h2><p>PIXORA is packed with tools that make hosting, optimizing and sharing your images effortless.</p></div>
+        <div class="features-grid">
+          <div class="feature"><div class="feature-icon fi-1"><i class="fas fa-cloud-upload-alt"></i></div><h3>Lightning Uploads</h3><p>Drag & drop with real-time progress, thumbnails and instant feedback.</p></div>
+          <div class="feature"><div class="feature-icon fi-2"><i class="fas fa-compress-arrows-alt"></i></div><h3>Smart Compression</h3><p>Reduce file sizes by up to 90% without visible quality loss.</p></div>
+          <div class="feature"><div class="feature-icon fi-3"><i class="fas fa-shield-alt"></i></div><h3>Secure Storage</h3><p>Encrypted uploads, private-by-default galleries, and safe share links.</p></div>
+          <div class="feature"><div class="feature-icon fi-4"><i class="fas fa-th-large"></i></div><h3>Smart Gallery</h3><p>Organize by categories, search instantly, preview in a clean lightbox.</p></div>
+          <div class="feature"><div class="feature-icon fi-5"><i class="fas fa-mobile-alt"></i></div><h3>Fully Responsive</h3><p>Manage your images from any device — desktop, tablet or phone.</p></div>
+          <div class="feature"><div class="feature-icon fi-6"><i class="fas fa-link"></i></div><h3>Instant Share Links</h3><p>Generate direct URLs and share them anywhere in one click.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="how" style="background:rgba(0,0,0,.15)">
+      <div class="container">
+        <div class="section-head"><span class="eyebrow">How it works</span><h2>Up and running in <span class="text-primary-grad">under 60 seconds</span></h2></div>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><h3>Create account</h3><p>Sign up free with your email in seconds.</p></div>
+          <div class="step"><div class="step-num">2</div><h3>Upload images</h3><p>Drag & drop your images. Compress instantly.</p></div>
+          <div class="step"><div class="step-num">3</div><h3>Organize</h3><p>Add titles, descriptions and categories.</p></div>
+          <div class="step"><div class="step-num">4</div><h3>Share anywhere</h3><p>Copy the direct link and paste it anywhere.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pricing">
+      <div class="container">
+        <div class="section-head"><span class="eyebrow">Pricing</span><h2>Simple, <span class="text-primary-grad">honest pricing</span></h2><p>Start free forever. Upgrade when you need more power. Manual payment via Nagad, Bkash or Rocket.</p></div>
+        <div class="pricing-grid" id="publicPricingGrid"></div>
+        <p style="text-align:center;color:var(--text-dim);font-size:13.5px;margin-top:20px"><i class="fas fa-lock"></i> Secure manual payment — sent directly to our verified merchant accounts.</p>
+      </div>
+    </section>
+
+    <section id="faq">
+      <div class="container">
+        <div class="section-head"><span class="eyebrow">FAQ</span><h2>Questions? <span class="text-primary-grad">We've got answers.</span></h2></div>
+        <div class="faq-list">
+          <div class="faq"><div class="faq-q">Is PIXORA really free? <i class="fas fa-chevron-down"></i></div><div class="faq-a"><div class="faq-a-inner">Yes — the Free plan is free forever. Upgrade to Pro anytime for unlimited storage.</div></div></div>
+          <div class="faq"><div class="faq-q">How do I pay? <i class="fas fa-chevron-down"></i></div><div class="faq-a"><div class="faq-a-inner">Manual payment via Nagad, Bkash or Rocket. Choose a plan, send the money, then submit your TrxID.</div></div></div>
+          <div class="faq"><div class="faq-q">How long does verification take? <i class="fas fa-chevron-down"></i></div><div class="faq-a"><div class="faq-a-inner">Usually within a few hours. Track status in "My Orders".</div></div></div>
+          <div class="faq"><div class="faq-q">What formats are supported? <i class="fas fa-chevron-down"></i></div><div class="faq-a"><div class="faq-a-inner">JPG, PNG, GIF and WEBP — up to 32MB on Free.</div></div></div>
+          <div class="faq"><div class="faq-q">Can I delete my images? <i class="fas fa-chevron-down"></i></div><div class="faq-a"><div class="faq-a-inner">Absolutely. You own your images.</div></div></div>
+          <div class="faq"><div class="faq-q">Is my data secure? <i class="fas fa-chevron-down"></i></div><div class="faq-a"><div class="faq-a-inner">Yes. Encrypted, secure, and never sold.</div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="cta-band">
+          <h2>Ready to give your images a home?</h2>
+          <p>Join thousands of creators using PIXORA to store, optimize and share their images.</p>
+          <button class="btn btn-lg" onclick="openAuth('register')"><i class="fas fa-rocket"></i> Create free account</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="page-about" class="page-wrap">
+    <div class="container">
+      <div class="about-hero">
+        <span class="eyebrow" style="display:inline-block;padding:6px 14px;border-radius:999px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.25);color:#93c5fd;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:18px">About PIXORA</span>
+        <h1>Built by creators, <span class="text-primary-grad">for creators.</span></h1>
+        <p>PIXORA was born out of frustration with slow, ugly, ad-filled image hosts. We wanted something beautiful, fast and respectful of your privacy. So we built it.</p>
+      </div>
+      <div class="about-grid">
+        <div class="about-card"><i class="fas fa-rocket"></i><h3>Our Mission</h3><p>Make image hosting effortless, beautiful and accessible to everyone.</p></div>
+        <div class="about-card"><i class="fas fa-shield-alt"></i><h3>Our Values</h3><p>Privacy first. No ads. No data selling. Your images belong to you.</p></div>
+        <div class="about-card"><i class="fas fa-bolt"></i><h3>Our Promise</h3><p>Fast uploads, smart compression, clean design, and real support.</p></div>
+      </div>
+      <div class="dev-credit" style="max-width:1000px;margin:40px auto 0">
+        <i class="fas fa-code"></i>
+        <div>
+          <b>Designed &amp; Developed by Md. Ashfaqur Rahman Tanim</b><br>
+          <span style="color:var(--text-muted);font-size:13.5px">Full-stack developer • <a href="https://rovermdashfaq.github.io/portfolio/" target="_blank" rel="noopener">View portfolio →</a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="page-contact" class="page-wrap">
+    <div class="container">
+      <div class="section-head"><span class="eyebrow">Contact</span><h2>Let's <span class="text-primary-grad">talk</span></h2><p>Have a question, feedback or partnership idea? We'd love to hear from you.</p></div>
+      <div class="contact-grid">
+        <div class="contact-info">
+          <h3>Get in touch</h3>
+          <p>We usually respond within 24 hours on business days.</p>
+          <div class="contact-item"><i class="fas fa-envelope"></i><div><b>Email</b><span>hello@pixora.app</span></div></div>
+          <div class="contact-item"><i class="fas fa-user-tie"></i><div><b>Developer</b><span>Md. Ashfaqur Rahman Tanim</span></div></div>
+          <div class="contact-item"><i class="fas fa-globe"></i><div><b>Portfolio</b><span><a href="https://rovermdashfaq.github.io/portfolio/" target="_blank" style="color:var(--primary)">rovermdashfaq.github.io/portfolio</a></span></div></div>
+        </div>
+        <form class="contact-form" id="contactForm">
+          <div class="form-group"><label class="form-label">Your name <span class="req">*</span></label><input class="form-control" id="cName" required></div>
+          <div class="form-group"><label class="form-label">Email <span class="req">*</span></label><input type="email" class="form-control" id="cEmail" required></div>
+          <div class="form-group"><label class="form-label">Subject</label><input class="form-control" id="cSubject"></div>
+          <div class="form-group"><label class="form-label">Message <span class="req">*</span></label><textarea class="form-control" id="cMessage" rows="5" required></textarea></div>
+          <button class="btn btn-block" type="submit"><i class="fas fa-paper-plane"></i> Send message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="page-privacy" class="page-wrap">
+    <div class="container"><div class="legal">
+      <h1>Privacy Policy</h1><p class="updated">Last updated: January 2025</p>
+      <p>Your privacy is a core value at PIXORA. This policy explains what data we collect and how we use it.</p>
+      <h2>1. Information We Collect</h2>
+      <ul><li>Account data: name, email, hashed password.</li><li>Content: images, titles, descriptions.</li><li>Usage data: browser, IP, patterns.</li><li>Payment data: TrxIDs you submit.</li></ul>
+      <h2>2. How We Use Your Data</h2>
+      <p>To operate PIXORA, authenticate you, deliver your images, verify payments and provide support. We never sell your data.</p>
+      <h2>3. Payment Information</h2>
+      <p>We do not store full payment credentials. We only store TrxIDs for verification.</p>
+      <h2>4. Cookies</h2>
+      <p>We use essential cookies to keep you logged in.</p>
+      <h2>5. Your Rights</h2>
+      <p>Access, correct, export or delete your data anytime. Email <a href="mailto:privacy@pixora.app">privacy@pixora.app</a>.</p>
+      <h2>6. Security</h2>
+      <p>HTTPS, encrypted storage, best practices.</p>
+      <h2>7. Contact</h2>
+      <p><a href="mailto:privacy@pixora.app">privacy@pixora.app</a></p>
+    </div></div>
+  </div>
+
+  <div id="page-terms" class="page-wrap">
+    <div class="container"><div class="legal">
+      <h1>Terms of Service</h1><p class="updated">Last updated: January 2025</p>
+      <h2>1. Your Account</h2><p>You are responsible for your account. Must be 13+ years old.</p>
+      <h2>2. Acceptable Use</h2><p>No illegal content, CSAM, hate speech, malware, or harmful content.</p>
+      <h2>3. Your Content</h2><p>You retain full ownership. You grant PIXORA a limited license to store and deliver.</p>
+      <h2>4. Subscriptions & Payments</h2><p>Manual payment via Nagad/Bkash/Rocket. Fraudulent submissions will be rejected and accounts terminated.</p>
+      <h2>5. Service Availability</h2><p>No uptime guarantee. Maintain backups of important images.</p>
+      <h2>6. Termination</h2><p>Delete your account anytime.</p>
+      <h2>7. Liability</h2><p>Provided "as is".</p>
+      <h2>8. Contact</h2><p><a href="mailto:legal@pixora.app">legal@pixora.app</a></p>
+    </div></div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="https://i.ibb.co/GQY1wH5Y/Pixora-Your-Images-Your-Space.png" alt="PIXORA">
+          <p>Your images. Your space. Fast, secure and beautifully simple image hosting for creators everywhere.</p>
+          <div class="footer-social">
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-github"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#"><i class="fab fa-dribbble"></i></a>
+          </div>
+        </div>
+        <div class="footer-col"><h4>Product</h4><a href="#features" data-nav>Features</a><a href="#pricing" data-nav>Pricing</a><a href="#how" data-nav>How it works</a><a href="#faq" data-nav>FAQ</a></div>
+        <div class="footer-col"><h4>Company</h4><a href="#" data-page="about">About</a><a href="#" data-page="contact">Contact</a><a href="#" data-page="privacy">Privacy Policy</a><a href="#" data-page="terms">Terms of Service</a></div>
+        <div class="footer-col"><h4>Account</h4><a href="#" onclick="openAuth('login');return false;">Sign in</a><a href="#" onclick="openAuth('register');return false;">Create account</a></div>
+      </div>
+      <div class="footer-bottom">
+        <div>© <span id="year"></span> PIXORA. All rights reserved.</div>
+        <div>Designed &amp; Developed by <a href="https://rovermdashfaq.github.io/portfolio/" target="_blank" rel="noopener">Md. Ashfaqur Rahman Tanim</a></div>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- ==================== AUTH ==================== -->
+<div id="authScreen" class="auth-wrap hidden">
+  <aside class="auth-aside">
+    <div class="auth-aside-inner">
+      <div class="nav-logo" style="margin-bottom:40px" onclick="closeAuth()">
+        <img src="https://i.ibb.co/jP5Nmvgw/file-00000000031882119d721429cf3de75c.png" alt="PIXORA">
+        <div><b style="color:#fff">PIXORA</b><small>Your images. Your space.</small></div>
+      </div>
+      <h2 class="text-grad">Welcome to your <span class="text-primary-grad">image space.</span></h2>
+      <p>Store, compress, organize and share — all in one beautifully simple platform.</p>
+      <div class="auth-feature"><i class="fas fa-bolt"></i><div><b>Blazing fast uploads</b><span>Drag, drop, done in seconds.</span></div></div>
+      <div class="auth-feature"><i class="fas fa-shield-alt"></i><div><b>Private by default</b><span>Your images, your control.</span></div></div>
+      <div class="auth-feature"><i class="fas fa-compress-arrows-alt"></i><div><b>Smart compression</b><span>Save up to 90% file size.</span></div></div>
+    </div>
+  </aside>
+  <div class="auth-form-side">
+    <div class="auth-card">
+      <div class="auth-header"><h2 id="authTitle">Welcome back</h2><p id="authSubtitle">Sign in to access your PIXORA space</p></div>
+      <form id="authForm" novalidate>
+        <div id="nameField" class="form-group hidden"><label class="form-label" for="name">Full name <span class="req">*</span></label><input type="text" class="form-control" id="name" placeholder="Jane Doe"></div>
+        <div class="form-group"><label class="form-label" for="email">Email address <span class="req">*</span></label><input type="email" class="form-control" id="email" placeholder="name@example.com" required></div>
+        <div class="form-group">
+          <label class="form-label" for="password">Password <span class="req">*</span></label>
+          <div class="pwd-wrap">
+            <input type="password" class="form-control" id="password" placeholder="••••••••" required>
+            <button type="button" class="toggle-pwd" id="togglePwd"><i class="fas fa-eye"></i></button>
+          </div>
+          <small class="hint" id="pwdHint" style="display:none">Minimum 6 characters</small>
+        </div>
+        <a href="#" class="forgot-link" id="forgotLink">Forgot password?</a>
+        <div id="photoField" class="form-group hidden"><label class="form-label" for="photo">Profile photo <span class="req">*</span></label><input type="file" class="form-control" id="photo" accept="image/*" style="padding:10px"></div>
+        <div id="cropperContainer" class="hidden" style="margin-bottom:20px">
+          <div style="max-height:360px;overflow:hidden;border-radius:10px;background:#000;margin-bottom:14px"><img id="cropperImage" src="" alt="Crop"></div>
+          <button type="button" class="btn btn-outline btn-block" id="cropBtn"><i class="fas fa-crop"></i> Crop photo</button>
+        </div>
+        <button type="submit" class="btn btn-block" id="authSubmitBtn"><i class="fas fa-sign-in-alt"></i> Sign in</button>
+      </form>
+      <div class="auth-toggle"><span id="authToggleText">Don't have an account?</span> <a href="#" id="authToggleLink">Create one</a></div>
+      <div class="auth-error" id="authError"></div>
+      <div style="text-align:center;margin-top:24px"><a href="#" onclick="closeAuth();return false;" style="font-size:13px;color:var(--text-dim)"><i class="fas fa-arrow-left"></i> Back to site</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== APP ==================== -->
+<div id="appShell" class="app-shell">
+  <header class="app-header">
+    <div class="app-header-inner">
+      <div class="app-logo" onclick="switchTab('upload')">
+        <img src="https://i.ibb.co/jP5Nmvgw/file-00000000031882119d721429cf3de75c.png" alt="PIXORA">
+        <div><b>PIXORA</b><small>Your images. Your space.</small></div>
+      </div>
+      <div class="user-block">
+        <div class="user-meta">
+          <div class="user-avatar" id="userAvatar">U</div>
+          <div>
+            <div class="user-name" id="userName">User</div>
+            <div><span class="plan-pill free" id="userPlanPill">Free</span></div>
+          </div>
+        </div>
+        <a href="admin.html" class="icon-btn admin hidden" id="adminLinkBtn" title="Admin Panel"><i class="fas fa-user-shield"></i></a>
+        <button class="icon-btn" id="viewSiteBtn" title="View site"><i class="fas fa-globe"></i></button>
+        <button class="btn btn-outline btn-sm" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Sign out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <div class="container">
+      <div class="app-tabs">
+        <button class="app-tab active" data-tab="upload"><i class="fas fa-cloud-upload-alt"></i> Upload</button>
+        <button class="app-tab" data-tab="gallery"><i class="fas fa-th"></i> Gallery</button>
+        <button class="app-tab" data-tab="upgrade"><i class="fas fa-crown"></i> Upgrade</button>
+        <button class="app-tab" data-tab="orders"><i class="fas fa-receipt"></i> My Orders</button>
+        <button class="app-tab" data-tab="share"><i class="fas fa-link"></i> Share</button>
+        <button class="app-tab" data-tab="settings"><i class="fas fa-cog"></i> Settings</button>
+      </div>
+
+      <!-- UPLOAD -->
+      <div id="tab-upload" class="tab-pane active">
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-icon primary"><i class="fas fa-images"></i></div><div class="stat-info"><h3 id="totalImages">0</h3><p>Total images</p></div></div>
+          <div class="stat-card"><div class="stat-icon success"><i class="fas fa-upload"></i></div><div class="stat-info"><h3 id="todayUploads">0</h3><p>Uploaded today</p></div></div>
+          <div class="stat-card"><div class="stat-icon warning"><i class="fas fa-hdd"></i></div><div class="stat-info"><h3 id="storageUsed">0 MB</h3><p>Storage used</p></div></div>
+          <div class="stat-card"><div class="stat-icon danger"><i class="fas fa-eye"></i></div><div class="stat-info"><h3 id="totalViews">0</h3><p>Total views</p></div></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2 class="card-title"><i class="fas fa-plus-circle"></i> Upload new image</h2></div>
+          <div class="card-body">
+            <div class="upload-area" id="uploadArea">
+              <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+              <h3>Drag & drop to upload</h3>
+              <p id="uploadLimitText">JPG, PNG, GIF, WEBP — Max 32MB · Multiple files supported</p>
+              <button class="btn" id="browseBtn" type="button"><i class="fas fa-folder-open"></i> Browse files</button>
+              <input type="file" id="fileInput" accept="image/*" multiple style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
+            </div>
+            <div class="preview-container hidden" id="previewContainer">
+              <img class="preview-image" id="previewImage" src="" alt="Preview">
+              <div class="thumb-strip" id="thumbStrip"></div>
+              <div class="size-panel">
+                <div class="size-head"><i class="fas fa-compress-arrows-alt"></i><h4>Smart size reduction</h4></div>
+                <div class="slider-row">
+                  <span class="lbl">10%</span><input type="range" id="sizeSlider" min="10" max="100" value="80"><span class="lbl">100%</span>
+                  <div class="size-value" id="sizeValue">80%</div>
+                </div>
+                <div class="preset-row">
+                  <button type="button" class="preset-btn" data-size="100">Original</button>
+                  <button type="button" class="preset-btn active" data-size="80">80%</button>
+                  <button type="button" class="preset-btn" data-size="60">60%</button>
+                  <button type="button" class="preset-btn" data-size="40">40%</button>
+                  <button type="button" class="preset-btn" data-size="20">20%</button>
+                </div>
+                <div class="quality-row">
+                  <label for="qualitySelect">Quality</label>
+                  <select id="qualitySelect">
+                    <option value="0.9">High (90%)</option><option value="0.8" selected>Good (80%)</option>
+                    <option value="0.7">Medium (70%)</option><option value="0.6">Low (60%)</option><option value="0.5">Minimum (50%)</option>
+                  </select>
+                </div>
+                <div class="size-info">
+                  <span>📐 Original: <strong id="originalSize">0 KB</strong></span>
+                  <span>📏 Estimated: <strong id="estimatedSize">0 KB</strong></span>
+                  <span>📊 Saved: <strong id="savedSize">0 KB</strong></span>
+                </div>
+                <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+                  <button type="button" class="btn btn-sm" id="applySizeBtn"><i class="fas fa-check"></i> Apply reduction</button>
+                  <button type="button" class="btn btn-sm btn-outline" id="resetSizeBtn"><i class="fas fa-undo"></i> Reset</button>
+                </div>
+              </div>
+              <div class="info-block">
+                <h4>Image details</h4>
+                <div class="info-grid">
+                  <div class="info-item"><span>File name</span><span id="fileName">-</span></div>
+                  <div class="info-item"><span>File size</span><span id="fileSize">-</span></div>
+                  <div class="info-item"><span>Dimensions</span><span id="fileDimensions">-</span></div>
+                  <div class="info-item"><span>Type</span><span id="fileType">-</span></div>
+                </div>
+              </div>
+              <div class="form-group" style="margin-top:22px"><label class="form-label">Title</label><input class="form-control" id="imageTitle" placeholder="Give your image a title"></div>
+              <div class="form-group"><label class="form-label">Description</label><textarea class="form-control" id="imageDescription" rows="3"></textarea></div>
+              <div class="form-group"><label class="form-label">Category</label>
+                <select class="form-control" id="imageCategory">
+                  <option value="general">General</option><option value="nature">Nature</option><option value="portrait">Portrait</option>
+                  <option value="architecture">Architecture</option><option value="art">Art</option><option value="technology">Technology</option>
+                  <option value="travel">Travel</option><option value="other">Other</option>
+                </select>
+              </div>
+              <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:22px">
+                <button class="btn" id="uploadBtn"><i class="fas fa-upload"></i> Upload to PIXORA</button>
+                <button class="btn btn-outline" id="resetBtn"><i class="fas fa-redo"></i> Reset</button>
+              </div>
+            </div>
+            <div id="uploadResult" style="margin-top:22px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GALLERY -->
+      <div id="tab-gallery" class="tab-pane">
+        <div class="card">
+          <div class="card-head">
+            <h2 class="card-title"><i class="fas fa-th"></i> My gallery</h2>
+            <div class="card-actions">
+              <button class="btn btn-outline btn-sm" id="refreshGalleryBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
+              <select class="form-control" id="categoryFilter" style="width:auto;padding:8px 12px;font-size:13px">
+                <option value="all">All categories</option><option value="nature">Nature</option><option value="portrait">Portrait</option>
+                <option value="architecture">Architecture</option><option value="art">Art</option><option value="technology">Technology</option>
+                <option value="travel">Travel</option><option value="general">General</option><option value="other">Other</option>
+              </select>
+              <input class="form-control" id="searchInput" placeholder="Search..." style="width:180px;padding:8px 12px;font-size:13px">
+            </div>
+          </div>
+          <div class="card-body"><div class="gallery-grid" id="galleryContainer"></div></div>
+        </div>
+      </div>
+
+      <!-- UPGRADE -->
+      <div id="tab-upgrade" class="tab-pane">
+        <div class="card">
+          <div class="card-head">
+            <h2 class="card-title"><i class="fas fa-crown"></i> Upgrade your plan</h2>
+            <div class="plan-pill free" id="currentPlanBadge">Free</div>
+          </div>
+          <div class="card-body">
+            <div class="plan-cards" id="userPlanCards"></div>
+
+            <div id="paymentForm" style="display:none">
+              <div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);padding:18px;border-radius:14px;margin-bottom:22px">
+                <h4 style="margin-bottom:6px"><i class="fas fa-info-circle" style="color:var(--primary)"></i> How manual payment works</h4>
+                <ol style="color:var(--text-muted);font-size:13.5px;margin-left:18px;line-height:1.8">
+                  <li>Send the exact amount to the number below.</li>
+                  <li>Copy the <b>Transaction ID (TrxID)</b> from your SMS.</li>
+                  <li>Fill the form and submit. Verification usually takes a few hours.</li>
+                  <li>Once approved, your subscription activates automatically.</li>
+                </ol>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Select payment method</label>
+                <div class="pay-method" id="payMethodWrap"></div>
+              </div>
+
+              <div class="recipient-box">
+                <div class="label">Send money to</div>
+                <div class="number">
+                  <span id="recipientNumber">—</span>
+                  <button type="button" id="copyRecipientBtn" title="Copy"><i class="fas fa-copy"></i></button>
+                </div>
+                <div class="hint" id="recipientHint"></div>
+              </div>
+
+              <div id="payInstructions" style="color:var(--text-muted);font-size:13.5px;margin-bottom:20px;line-height:1.75"></div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px" class="pay-form-grid">
+                <div class="form-group"><label class="form-label">Your name <span class="req">*</span></label><input class="form-control" id="orderName"></div>
+                <div class="form-group"><label class="form-label">Your email</label><input class="form-control" id="orderEmail" readonly></div>
+                <div class="form-group"><label class="form-label">Transaction ID (TrxID) <span class="req">*</span></label><input class="form-control" id="orderTrx" placeholder="e.g. 9F2A8B1C3D" style="text-transform:uppercase"></div>
+                <div class="form-group"><label class="form-label">Amount sent (BDT) <span class="req">*</span></label><input type="number" class="form-control" id="orderAmount" placeholder="e.g. 500"></div>
+              </div>
+              <div class="form-group"><label class="form-label">Sender number</label><input class="form-control" id="orderSender" placeholder="e.g. 017xxxxxxxx"></div>
+              <div class="form-group"><label class="form-label">Note (optional)</label><textarea class="form-control" id="orderNote" rows="2"></textarea></div>
+              <div style="display:flex;gap:12px;flex-wrap:wrap">
+                <button class="btn" id="submitOrderBtn"><i class="fas fa-paper-plane"></i> Submit for verification</button>
+                <button class="btn btn-outline" id="cancelPayBtn">Cancel</button>
+              </div>
+              <p style="color:var(--text-dim);font-size:12.5px;margin-top:14px"><i class="fas fa-shield-alt"></i> We never ask for your PIN or OTP.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MY ORDERS -->
+      <div id="tab-orders" class="tab-pane">
+        <div class="card">
+          <div class="card-head"><h2 class="card-title"><i class="fas fa-receipt"></i> My orders</h2><button class="btn btn-outline btn-sm" id="refreshOrdersBtn"><i class="fas fa-sync-alt"></i> Refresh</button></div>
+          <div class="card-body" id="ordersList"><div class="empty-state"><i class="fas fa-receipt"></i><h3>No orders yet</h3></div></div>
+        </div>
+      </div>
+
+      <!-- SHARE -->
+      <div id="tab-share" class="tab-pane">
+        <div class="card">
+          <div class="card-head"><h2 class="card-title"><i class="fas fa-link"></i> Share your gallery</h2></div>
+          <div class="card-body">
+            <p style="color:var(--text-muted);margin-bottom:18px">Generate a public link to share your entire gallery.</p>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <input class="form-control" id="publicLink" readonly style="flex:1;min-width:240px">
+              <button class="btn" id="genPublicLink"><i class="fas fa-link"></i> Generate</button>
+              <button class="btn btn-outline" id="copyPublicLink"><i class="fas fa-copy"></i> Copy</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div id="tab-settings" class="tab-pane">
+        <div class="card">
+          <div class="card-head"><h2 class="card-title"><i class="fas fa-cog"></i> Account settings</h2></div>
+          <div class="card-body">
+            <div class="form-group"><label class="form-label">Display name</label><input class="form-control" id="setName"></div>
+            <div class="form-group"><label class="form-label">Email</label><input class="form-control" id="setEmail" readonly></div>
+            <div class="form-group"><label class="form-label">Max file size (MB)</label><input type="number" class="form-control" id="maxFileSize" value="32" min="1" max="32"></div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:18px">
+              <button class="btn" id="saveSettings"><i class="fas fa-save"></i> Save changes</button>
+              <button class="btn btn-outline" id="changePwdBtn"><i class="fas fa-key"></i> Change password</button>
+              <button class="btn btn-danger" id="deleteAccountBtn"><i class="fas fa-user-slash"></i> Delete account</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="modal" id="imageModal">
+  <div class="modal-content">
+    <div class="modal-head"><h3 class="modal-title" id="modalImageTitle">Image details</h3><button class="modal-close" id="modalClose">&times;</button></div>
+    <div class="modal-body">
+      <img id="modalImage" class="modal-img" src="" alt="">
+      <div class="info-grid">
+        <div class="info-item"><span>Title</span><span id="modalTitle">-</span></div>
+        <div class="info-item"><span>Description</span><span id="modalDescription">-</span></div>
+        <div class="info-item"><span>Category</span><span id="modalCategory">-</span></div>
+        <div class="info-item"><span>Uploaded</span><span id="modalDate">-</span></div>
+        <div class="info-item"><span>Dimensions</span><span id="modalDimensions">-</span></div>
+        <div class="info-item"><span>File size</span><span id="modalSize">-</span></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" id="copyUrlBtn"><i class="fas fa-link"></i> Copy URL</button>
+        <button class="btn btn-outline" id="downloadBtn"><i class="fas fa-download"></i> Download</button>
+        <button class="btn btn-outline" id="editBtn"><i class="fas fa-edit"></i> Edit</button>
+        <button class="btn btn-danger" id="deleteBtn" style="margin-left:auto"><i class="fas fa-trash"></i> Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="editModal">
+  <div class="modal-content" style="max-width:520px">
+    <div class="modal-head"><h3 class="modal-title">Edit image</h3><button class="modal-close" id="editModalClose">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Title</label><input class="form-control" id="editTitle"></div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-control" id="editDescription" rows="3"></textarea></div>
+      <div class="form-group"><label class="form-label">Category</label>
+        <select class="form-control" id="editCategory">
+          <option value="general">General</option><option value="nature">Nature</option><option value="portrait">Portrait</option>
+          <option value="architecture">Architecture</option><option value="art">Art</option><option value="technology">Technology</option>
+          <option value="travel">Travel</option><option value="other">Other</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <button class="btn" id="saveEdit"><i class="fas fa-save"></i> Save</button>
+        <button class="btn btn-outline" id="cancelEdit">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox"><button class="lightbox-close" id="lightboxClose">&times;</button><img id="lightboxImg" src="" alt=""></div>
+
+<div class="cookie-banner hidden" id="cookieBanner">
+  <p>We use cookies to keep you signed in. By using PIXORA you agree to our <a href="#" data-page="privacy">Privacy Policy</a>.</p>
+  <div class="cookie-actions"><button class="btn btn-outline btn-sm" id="cookieDecline">Decline</button><button class="btn btn-sm" id="cookieAccept">Accept</button></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+<script>
+/* =========================================================
+   PIXORA — Fixed Upload System
+   ========================================================= */
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCDMDb5Mluq1MV5ovVg9ByC2PjZt2YA5Hc",
+  authDomain: "mart-meeting.firebaseapp.com",
+  databaseURL: "https://mart-meeting-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "mart-meeting",
+  storageBucket: "mart-meeting.firebasestorage.app",
+  messagingSenderId: "972172392499",
+  appId: "1:972172392499:web:976d04d5dfa049c49c4b46"
+};
+const IMGBB_API_KEY = 'f03c71a7173fbfe87a1b0e10110f6bfe';
+const MAX_RETRIES = 2;
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+/* ---------- STATE ---------- */
+let currentUser = null, userProfile = {}, isAdmin = false;
+let userImages = [];
+let currentFile = null, originalFile = null, resizedBlob = null, originalDataUrl = null;
+let cropper = null, croppedPhotoBlob = null, isLogin = true;
+let activeImage = null;
+let plans = [], paymentSettings = {}, selectedPlan = null;
+let uploadQueue = [];
+let activeQueueIdx = 0;
+let isUploading = false;
+
+/* ---------- TOAST ---------- */
+function toast(type, title, msg, ttl = 4200) {
+  const wrap = document.getElementById('toastWrap');
+  if (!wrap) return;
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : type === 'warn' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+  el.innerHTML = `<i class="fas ${icon}"></i><div class="toast-body"><div class="toast-title">${title}</div><div class="toast-msg">${msg}</div></div><button class="toast-close">&times;</button>`;
+  wrap.appendChild(el);
+  const kill = () => { el.style.animation = 'toastIn .3s ease reverse forwards'; setTimeout(() => el.remove(), 300); };
+  el.querySelector('.toast-close').onclick = kill;
+  setTimeout(kill, ttl);
+}
+
+/* ---------- HELPERS ---------- */
+const $ = id => document.getElementById(id);
+function formatFileSize(bytes) {
+  if (!bytes || bytes === 0) return '0 Bytes';
+  const k = 1024, s = ['Bytes', 'KB', 'MB', 'GB'], i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + s[i];
+}
+function escapeHtml(s) { return (s || '').toString().replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])); }
+function formatDate(iso) { if (!iso) return 'Unknown'; try { return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }); } catch (e) { return 'Unknown'; } }
+function formatDateTime(iso) { if (!iso) return 'Unknown'; try { return new Date(iso).toLocaleString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }); } catch (e) { return 'Unknown'; } }
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); toast('success', 'Copied!', 'Copied to clipboard.'); }
+  catch (e) { const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast('success', 'Copied!', 'Copied to clipboard.'); }
+}
+function show(el) { if (!el) return; el.classList.remove('hidden'); el.style.display = ''; }
+function hide(el) { if (!el) return; el.classList.add('hidden'); el.style.display = 'none'; }
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+/* ---------- ImgBB UPLOAD WITH RETRY ---------- */
+async function uploadToImgbb(blobOrFile, filename, retries = MAX_RETRIES) {
+  let lastError = null;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const fd = new FormData();
+      fd.append('image', blobOrFile, filename);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+      const r = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+        method: 'POST', body: fd, signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+
+      console.log(`  [Attempt ${attempt + 1}] HTTP ${r.status}`);
+
+      if (r.status === 429) throw new Error('ImgBB rate limit — wait a few minutes.');
+      if (r.status === 403) throw new Error('ImgBB API key rejected (403).');
+      if (!r.ok && r.status !== 400) throw new Error(`ImgBB HTTP ${r.status}`);
+
+      let d;
+      try { d = await r.json(); }
+      catch (e) { throw new Error(`ImgBB invalid JSON (HTTP ${r.status})`); }
+
+      if (!d.success) {
+        throw new Error(`ImgBB error: ${d.error?.message || JSON.stringify(d.error || d)}`);
+      }
+      if (!d.data?.url) throw new Error('ImgBB returned no URL');
+
+      return {
+        url: d.data.url,
+        thumbUrl: d.data.thumb?.url || d.data.url,
+        mediumUrl: d.data.medium?.url || d.data.url,
+        deleteUrl: d.data.delete_url || ''
+      };
+    } catch (err) {
+      lastError = err;
+      if (err.name === 'AbortError') lastError = new Error('Upload timeout (60s)');
+      console.warn(`  [Attempt ${attempt + 1}] ${err.message}`);
+      if (attempt < retries) await sleep((attempt + 1) * 2000);
+    }
+  }
+  throw lastError;
+}
+
+/* ---------- ImgBB key health check ---------- */
+(async function testImgbb() {
+  try {
+    const fd = new FormData();
+    const png = new Blob([Uint8Array.from(atob(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
+    ), c => c.charCodeAt(0))], { type: 'image/png' });
+    fd.append('image', png, 'px.png');
+    const r = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: fd });
+    const d = await r.json();
+    if (d.success) console.log('%c✅ ImgBB key VALID', 'color:#10b981;font-weight:bold;font-size:13px');
+    else console.warn('%c⚠️ ImgBB issue:', 'color:#f59e0b;font-weight:bold', d.error?.message);
+  } catch (e) {
+    console.warn('%c⚠️ ImgBB unreachable:', 'color:#f59e0b;font-weight:bold', e.message);
+  }
+})();
+
+/* ---------- COOKIE ---------- */
+(function () {
+  const b = $('cookieBanner'); if (!b) return;
+  if (!localStorage.getItem('pixora.cookies')) setTimeout(() => show(b), 1200);
+  $('cookieAccept').onclick = () => { localStorage.setItem('pixora.cookies', 'all'); hide(b); };
+  $('cookieDecline').onclick = () => { localStorage.setItem('pixora.cookies', 'essential'); hide(b); };
+})();
+
+/* ---------- NAV ---------- */
+$('year').textContent = new Date().getFullYear();
+const navEl = $('mainNav');
+window.addEventListener('scroll', () => {
+  navEl.classList.toggle('scrolled', window.scrollY > 20);
+  $('backTop').classList.toggle('show', window.scrollY > 500);
+});
+$('backTop').onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
+$('navToggle').onclick = () => $('navLinks').classList.toggle('open');
+
+function showPage(pageId) {
+  document.querySelectorAll('#publicSite .page-wrap').forEach(p => p.classList.remove('active'));
+  const p = document.getElementById('page-' + pageId);
+  if (p) p.classList.add('active');
+  scrollTo({ top: 0, behavior: 'smooth' });
+  closeAuth();
+}
+document.querySelectorAll('[data-page]').forEach(a => {
+  a.addEventListener('click', e => { e.preventDefault(); showPage(a.getAttribute('data-page')); $('navLinks').classList.remove('open'); });
+});
+document.querySelectorAll('[data-nav]').forEach(a => {
+  a.addEventListener('click', () => { if (!$('page-home').classList.contains('active')) showPage('home'); $('navLinks').classList.remove('open'); });
+});
+document.querySelectorAll('.faq-q').forEach(q => {
+  q.addEventListener('click', () => {
+    const p = q.parentElement, open = p.classList.contains('open');
+    document.querySelectorAll('.faq').forEach(f => f.classList.remove('open'));
+    if (!open) p.classList.add('open');
+  });
+});
+$('contactForm').addEventListener('submit', e => { e.preventDefault(); e.target.reset(); toast('success', 'Message sent', "Thanks! We'll reply within 24 hours."); });
+
+/* ---------- AUTH ---------- */
+function openAuth(mode) {
+  $('publicSite').style.display = 'none';
+  $('appShell').style.display = 'none';
+  show($('authScreen'));
+  scrollTo({ top: 0 });
+  setAuthMode(mode === 'register' ? false : true);
+}
+function closeAuth() {
+  hide($('authScreen'));
+  $('appShell').style.display = 'none';
+  $('publicSite').style.display = '';
+}
+function setAuthMode(login) {
+  isLogin = login;
+  $('authTitle').textContent = login ? 'Welcome back' : 'Create account';
+  $('authSubtitle').textContent = login ? "Sign in to access your PIXORA space" : "Join PIXORA in seconds — it's free";
+  $('authSubmitBtn').innerHTML = login ? '<i class="fas fa-sign-in-alt"></i> Sign in' : '<i class="fas fa-user-plus"></i> Create account';
+  login ? hide($('nameField')) : show($('nameField'));
+  login ? hide($('photoField')) : show($('photoField'));
+  hide($('cropperContainer'));
+  $('forgotLink').style.display = login ? 'block' : 'none';
+  $('pwdHint').style.display = login ? 'none' : 'block';
+  $('authError').style.display = 'none';
+  $('authToggleText').textContent = login ? "Don't have an account?" : 'Already have an account?';
+  $('authToggleLink').textContent = login ? 'Create one' : 'Sign in';
+}
+$('authToggleLink').addEventListener('click', e => { e.preventDefault(); setAuthMode(!isLogin); });
+$('togglePwd').addEventListener('click', () => {
+  const inp = $('password'), ico = document.querySelector('#togglePwd i');
+  if (inp.type === 'password') { inp.type = 'text'; ico.className = 'fas fa-eye-slash'; }
+  else { inp.type = 'password'; ico.className = 'fas fa-eye'; }
+});
+$('forgotLink').addEventListener('click', async e => {
+  e.preventDefault();
+  const email = $('email').value.trim();
+  if (!email) { toast('warn', 'Email required', 'Enter your email above first.'); return; }
+  try { await auth.sendPasswordResetEmail(email); toast('success', 'Email sent', 'Check your inbox.'); }
+  catch (err) { toast('error', 'Failed', err.message); }
+});
+$('photo').addEventListener('change', e => {
+  const file = e.target.files[0]; if (!file) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    const img = $('cropperImage'); img.src = ev.target.result;
+    show($('cropperContainer'));
+    if (cropper) cropper.destroy();
+    cropper = new Cropper(img, { aspectRatio: 1, viewMode: 2, autoCropArea: 1, responsive: true, guides: true, background: false });
+  };
+  r.readAsDataURL(file);
+});
+$('cropBtn').addEventListener('click', () => {
+  if (!cropper) return;
+  const c = cropper.getCroppedCanvas({ width: 300, height: 300, imageSmoothingEnabled: true, imageSmoothingQuality: 'high' });
+  c.toBlob(b => { croppedPhotoBlob = b; hide($('cropperContainer')); cropper.destroy(); cropper = null; toast('success', 'Photo ready', 'Cropped successfully.'); }, 'image/jpeg', 0.9);
+});
+
+$('authForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const errEl = $('authError'); errEl.style.display = 'none';
+  const email = $('email').value.trim(), password = $('password').value, name = $('name').value.trim();
+  const btn = $('authSubmitBtn'); btn.disabled = true; const orig = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Please wait...';
+
+  let createdUser = null;
+  try {
+    if (isLogin) {
+      await auth.signInWithEmailAndPassword(email, password);
+      toast('success', 'Signed in', 'Welcome back!');
+    } else {
+      if (!name) throw new Error('Please enter your full name.');
+      if (password.length < 6) throw new Error('Password must be at least 6 characters.');
+      if (!croppedPhotoBlob) throw new Error('Please select and crop a profile photo.');
+
+      const cred = await auth.createUserWithEmailAndPassword(email, password);
+      createdUser = cred.user;
+      console.log('✅ Auth user created:', createdUser.uid);
+
+      console.log('📤 Uploading profile photo...');
+      let photoData;
+      try {
+        photoData = await uploadToImgbb(croppedPhotoBlob, 'profile.jpg', 1);
+        console.log('✅ Photo uploaded:', photoData.url);
+      } catch (photoErr) {
+        console.error('❌ Photo upload failed:', photoErr);
+        try { await createdUser.delete(); } catch (e) { console.warn('Rollback failed:', e.message); }
+        throw new Error('Photo upload failed: ' + photoErr.message);
+      }
+
+      console.log('💾 Saving user doc...');
+      try {
+        await db.collection('users').doc(createdUser.uid).set({
+          name, email,
+          photoURL: photoData.url,
+          photoDeleteURL: photoData.deleteUrl || '',
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          role: 'user',
+          plan: 'free',
+          planExpiry: null,
+          settings: { maxFileSize: 32 }
+        });
+        console.log('✅ User doc saved');
+      } catch (dbErr) {
+        console.error('❌ Firestore user doc failed:', dbErr);
+        try { await createdUser.delete(); } catch (e) { }
+        throw new Error('Database save failed: ' + dbErr.message);
+      }
+
+      try { await createdUser.updateProfile({ displayName: name, photoURL: photoData.url }); } catch (_) { }
+      try { await createdUser.sendEmailVerification(); } catch (_) { }
+
+      toast('success', 'Account created', 'Check your email to verify.');
+    }
+  } catch (err) {
+    console.error('Auth error:', err);
+    let msg = err.message.replace('Firebase: ', '');
+    if (msg.includes('email-already-in-use')) msg = 'This email is already registered. Try signing in.';
+    else if (msg.includes('weak-password')) msg = 'Password too weak. Use at least 6 characters.';
+    else if (msg.includes('invalid-email')) msg = 'Please enter a valid email address.';
+    errEl.textContent = msg;
+    errEl.style.display = 'block';
+  } finally { btn.disabled = false; btn.innerHTML = orig; }
+});
+
+/* ---------- AUTH STATE ---------- */
+auth.onAuthStateChanged(async user => {
+  if (user) {
+    currentUser = user;
+    hide($('authScreen'));
+    $('publicSite').style.display = 'none';
+    $('appShell').style.display = 'block';
+    try {
+      await loadUserData();
+      await autoExpireCheck();
+      await loadPlans();
+      await loadPaymentSettings();
+      await loadUserImages();
+      updateStats();
+      checkAdmin();
+    } catch (e) {
+      console.error('Init error:', e);
+      toast('error', 'Load failed', e.message);
+    }
+    if (user.emailVerified === false) {
+      setTimeout(() => toast('warn', 'Email not verified', 'Check your inbox to verify.'), 1800);
+    }
+  } else {
+    currentUser = null; userProfile = {}; isAdmin = false; userImages = [];
+    $('appShell').style.display = 'none';
+    $('publicSite').style.display = '';
+    hide($('authScreen'));
+    hide($('adminLinkBtn'));
+  }
+});
+
+$('logoutBtn').addEventListener('click', async () => { await auth.signOut(); toast('info', 'Signed out', 'See you soon!'); closeAuth(); });
+$('viewSiteBtn').addEventListener('click', () => { auth.signOut().then(() => { closeAuth(); showPage('home'); }); });
+
+/* ---------- AUTO EXPIRE ---------- */
+async function autoExpireCheck() {
+  if (!currentUser || !userProfile) return;
+  const plan = (userProfile.plan || 'free').toLowerCase();
+  if (plan === 'free') return;
+  if (!userProfile.planExpiry) return;
+  try {
+    const exp = userProfile.planExpiry.toDate ? userProfile.planExpiry.toDate() : new Date(userProfile.planExpiry);
+    if (isNaN(exp.getTime())) return;
+    if (exp <= new Date()) {
+      await db.collection('users').doc(currentUser.uid).set({
+        plan: 'free', planExpiry: null, expiredFrom: plan, expiredAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+      userProfile.plan = 'free';
+      userProfile.planExpiry = null;
+      toast('warn', 'Plan expired', `Your ${plan} plan has expired. You are now on Free.`);
+    }
+  } catch (e) { console.warn('autoExpire', e.message); }
+}
+
+/* ---------- USER DATA ---------- */
+async function loadUserData() {
+  if (!currentUser) return;
+  try {
+    const doc = await db.collection('users').doc(currentUser.uid).get();
+    userProfile = doc.exists ? doc.data() : {};
+    $('userName').textContent = userProfile.name || currentUser.displayName || 'User';
+    const av = $('userAvatar');
+    if (userProfile.photoURL) av.innerHTML = `<img src="${userProfile.photoURL}" alt="">`;
+    else av.textContent = (userProfile.name || currentUser.email || 'U').charAt(0).toUpperCase();
+    $('setName').value = userProfile.name || '';
+    $('setEmail').value = currentUser.email;
+    if (userProfile.settings?.maxFileSize) $('maxFileSize').value = userProfile.settings.maxFileSize;
+    updatePlanPill();
+  } catch (e) { console.error(e); }
+}
+function updatePlanPill() {
+  const pill = $('userPlanPill');
+  const plan = (userProfile.plan || 'free').toLowerCase();
+  let cls = plan === 'pro' ? 'pro' : plan === 'business' ? 'business' : 'free';
+  let txt = plan.charAt(0).toUpperCase() + plan.slice(1);
+  if (plan !== 'free' && userProfile.planExpiry) {
+    const exp = userProfile.planExpiry.toDate ? userProfile.planExpiry.toDate() : new Date(userProfile.planExpiry);
+    if (!isNaN(exp.getTime())) {
+      if (exp > new Date()) { txt += ' • ' + formatDate(exp); }
+      else { txt += ' • expired'; cls = 'expired'; }
+    }
+  }
+  pill.className = 'plan-pill ' + cls;
+  pill.textContent = txt;
+  $('currentPlanBadge').className = 'plan-pill ' + cls;
+  $('currentPlanBadge').textContent = txt;
+}
+function checkAdmin() {
+  isAdmin = userProfile.role === 'admin';
+  isAdmin ? show($('adminLinkBtn')) : hide($('adminLinkBtn'));
+}
+
+/* ---------- PLANS + PAYMENT ---------- */
+async function loadPlans() {
+  try {
+    const snap = await db.collection('plans').orderBy('order', 'asc').get();
+    plans = []; snap.forEach(d => plans.push({ id: d.id, ...d.data() }));
+  } catch (e) {
+    const snap = await db.collection('plans').get();
+    plans = []; snap.forEach(d => plans.push({ id: d.id, ...d.data() }));
+    plans.sort((a, b) => (a.order || 0) - (b.order || 0));
+  }
+  if (!plans.length) {
+    plans = [
+      { id: 'free', name: 'Free', price: 0, currency: '৳', duration: 'Forever', durationDays: 0, features: ['Up to 50 images', '32MB per file'], disabled: ['Custom domain'] },
+      { id: 'pro', name: 'Pro', price: 500, currency: '৳', duration: '1 month', durationDays: 30, features: ['Unlimited images'], disabled: [], featured: true },
+      { id: 'business', name: 'Business', price: 1500, currency: '৳', duration: '1 month', durationDays: 30, features: ['Everything Pro'], disabled: [] }
+    ];
+  }
+  renderPublicPricing();
+  renderUserPlanCards();
+}
+function renderPublicPricing() {
+  const grid = $('publicPricingGrid'); if (!grid) return;
+  let featuredSeen = false;
+  grid.innerHTML = plans.map(p => {
+    const isFeatured = p.featured && !featuredSeen;
+    if (isFeatured) featuredSeen = true;
+    return `
+      <div class="plan ${isFeatured ? 'featured' : ''}">
+        <div class="plan-name">${escapeHtml(p.name)}</div>
+        <div class="plan-price">${p.currency || '৳'}${p.price}<small>/${escapeHtml(p.duration || 'mo')}</small></div>
+        <p class="plan-desc">${escapeHtml(p.description || '')}</p>
+        <ul>
+          ${(p.features || []).map(f => `<li><i class="fas fa-check"></i> ${escapeHtml(f)}</li>`).join('')}
+          ${(p.disabled || []).map(f => `<li class="disabled"><i class="fas fa-times"></i> ${escapeHtml(f)}</li>`).join('')}
+        </ul>
+        <button class="btn ${isFeatured ? '' : 'btn-outline'} btn-block" onclick="openAuth('register')">${p.price === 0 ? 'Get started free' : 'Choose ' + escapeHtml(p.name)}</button>
+      </div>`;
+  }).join('');
+}
+function renderUserPlanCards() {
+  const wrap = $('userPlanCards'); if (!wrap) return;
+  const cur = (userProfile.plan || 'free').toLowerCase();
+  wrap.innerHTML = plans.map(p => {
+    const isCur = p.id === cur;
+    return `
+      <div class="plan-card ${isCur ? 'current' : ''}">
+        <h3>${escapeHtml(p.name)}</h3>
+        <div class="price">${p.currency || '৳'}${p.price}<small>/${escapeHtml(p.duration || 'mo')}</small></div>
+        <div class="duration">${escapeHtml(p.description || '')}</div>
+        <ul>${(p.features || []).slice(0, 5).map(f => `<li><i class="fas fa-check"></i> ${escapeHtml(f)}</li>`).join('')}</ul>
+        ${isCur
+        ? `<button class="btn btn-success btn-block" disabled><i class="fas fa-check"></i> Current plan</button>`
+        : `<button class="btn btn-block" onclick="startPayment('${p.id}')"><i class="fas fa-crown"></i> ${p.price === 0 ? 'Downgrade' : (cur === 'free' ? 'Upgrade' : 'Switch')} to ${escapeHtml(p.name)}</button>`}
+      </div>`;
+  }).join('');
+}
+async function loadPaymentSettings() {
+  try {
+    const doc = await db.collection('settings').doc('payment').get();
+    paymentSettings = doc.exists ? doc.data() : {};
+  } catch (e) {
+    paymentSettings = {};
+  }
+  renderPayMethodChooser();
+}
+
+/* ---------- PAYMENT FLOW ---------- */
+window.startPayment = function (planId) {
+  const plan = plans.find(p => p.id === planId); if (!plan) return;
+  if (plan.price === 0) {
+    if (!confirm('Switch to Free plan?')) return;
+    db.collection('users').doc(currentUser.uid).set({ plan: 'free', planExpiry: null }, { merge: true }).then(() => {
+      userProfile.plan = 'free'; userProfile.planExpiry = null; updatePlanPill(); renderUserPlanCards();
+      toast('success', 'Downgraded', 'You are now on the Free plan.');
+    }).catch(e => toast('error', 'Failed', e.message));
+    return;
+  }
+  selectedPlan = plan;
+  $('orderName').value = userProfile.name || currentUser.displayName || '';
+  $('orderEmail').value = currentUser.email;
+  $('orderAmount').value = plan.price;
+  $('orderTrx').value = ''; $('orderSender').value = ''; $('orderNote').value = '';
+  $('payInstructions').textContent = paymentSettings.instructions || '';
+  renderPayMethodChooser();
+  $('paymentForm').style.display = 'block';
+  $('paymentForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const enabled = Object.entries(paymentSettings).find(([k, v]) => v && v.enabled && v.number && k !== 'instructions' && k !== 'updatedAt' && k !== 'updatedBy');
+  if (enabled) { const r = document.querySelector(`input[name="payMethod"][value="${enabled[0]}"]`); if (r) { r.checked = true; updateRecipientBox(enabled[0]); } }
+};
+function renderPayMethodChooser() {
+  const wrap = $('payMethodWrap'); if (!wrap) return;
+  const items = [
+    { id: 'nagad', label: 'Nagad', cls: 'nagad' },
+    { id: 'bkash', label: 'Bkash', cls: 'bkash' },
+    { id: 'rocket', label: 'Rocket', cls: 'rocket' }
+  ];
+  wrap.innerHTML = items.map(it => {
+    const cfg = paymentSettings[it.id];
+    const enabled = cfg && cfg.enabled && cfg.number;
+    return `
+      <label style="${enabled ? '' : 'opacity:.4;cursor:not-allowed'}">
+        <input type="radio" name="payMethod" value="${it.id}" ${enabled ? '' : 'disabled'}>
+        <div class="method-box ${it.cls}">
+          <i class="fas fa-mobile-alt"></i>
+          <b>${it.label}</b>
+          <small>${enabled ? (cfg.type || 'Personal') : 'Unavailable'}</small>
+        </div>
+      </label>`;
+  }).join('');
+  wrap.querySelectorAll('input[name="payMethod"]').forEach(r => {
+    r.addEventListener('change', () => updateRecipientBox(r.value));
+  });
+}
+function updateRecipientBox(method) {
+  const cfg = paymentSettings[method]; if (!cfg) return;
+  $('recipientNumber').textContent = cfg.number || '—';
+  $('recipientHint').textContent = `${method.charAt(0).toUpperCase() + method.slice(1)} • ${cfg.type || 'Personal'} • Send Money`;
+  $('copyRecipientBtn').onclick = () => copyText(cfg.number);
+}
+$('cancelPayBtn').addEventListener('click', () => { $('paymentForm').style.display = 'none'; selectedPlan = null; });
+
+$('submitOrderBtn').addEventListener('click', async () => {
+  if (!selectedPlan) { toast('warn', 'No plan', 'Select a plan first.'); return; }
+  const method = document.querySelector('input[name="payMethod"]:checked')?.value;
+  if (!method) { toast('warn', 'No method', 'Select payment method.'); return; }
+  const name = $('orderName').value.trim();
+  const trx = $('orderTrx').value.trim().toUpperCase();
+  const amount = parseInt($('orderAmount').value);
+  const sender = $('orderSender').value.trim();
+  const note = $('orderNote').value.trim();
+
+  if (!name) { toast('warn', 'Name required', 'Enter your name.'); return; }
+  if (!trx || trx.length < 6) { toast('warn', 'Invalid TrxID', 'Min 6 characters.'); return; }
+  if (!/^[A-Z0-9]+$/.test(trx)) { toast('warn', 'Invalid TrxID', 'Letters and numbers only.'); return; }
+  if (!amount || amount <= 0) { toast('warn', 'Amount required', 'Enter amount sent.'); return; }
+  if (amount < selectedPlan.price) { toast('warn', 'Amount too low', `Plan requires ${selectedPlan.currency || '৳'}${selectedPlan.price}.`); return; }
+
+  const btn = $('submitOrderBtn'); btn.disabled = true; const o = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+  try {
+    const dup = await db.collection('orders').where('trxId', '==', trx).limit(1).get();
+    if (!dup.empty) { toast('error', 'Duplicate TrxID', 'Already submitted.'); btn.disabled = false; btn.innerHTML = o; return; }
+    const order = {
+      userId: currentUser.uid, userEmail: currentUser.email, userName: name,
+      planId: selectedPlan.id, planName: selectedPlan.name,
+      planPrice: selectedPlan.price, planCurrency: selectedPlan.currency || '৳',
+      planDurationDays: selectedPlan.durationDays || 30,
+      paymentMethod: method, recipientNumber: paymentSettings[method]?.number || '',
+      trxId: trx, amount, senderNumber: sender, note,
+      status: 'pending', createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    await db.collection('orders').add(order);
+    toast('success', 'Submitted!', 'Pending verification.');
+    $('paymentForm').style.display = 'none'; selectedPlan = null;
+    await loadUserOrders(); switchTab('orders');
+  } catch (e) { toast('error', 'Submit failed', e.message); }
+  finally { btn.disabled = false; btn.innerHTML = o; }
+});
+
+/* ---------- USER ORDERS ---------- */
+async function loadUserOrders() {
+  if (!currentUser) return;
+  const wrap = $('ordersList');
+  wrap.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div>';
+  try {
+    let orders = [];
+    try {
+      const snap = await db.collection('orders').where('userId', '==', currentUser.uid).orderBy('createdAt', 'desc').get();
+      snap.forEach(d => {
+        const data = d.data();
+        const at = data.createdAt?.toDate?.()?.toISOString() || new Date().toISOString();
+        orders.push({ id: d.id, ...data, createdAt: at });
+      });
+    } catch (e) {
+      console.warn('orderBy failed, fallback:', e.message);
+      const snap = await db.collection('orders').where('userId', '==', currentUser.uid).get();
+      snap.forEach(d => {
+        const data = d.data();
+        orders.push({ id: d.id, ...data, createdAt: data.createdAt?.toDate?.().toISOString() || new Date().toISOString() });
+      });
+      orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+    if (!orders.length) { wrap.innerHTML = `<div class="empty-state"><i class="fas fa-receipt"></i><h3>No orders yet</h3></div>`; return; }
+    wrap.innerHTML = orders.map(o => `
+      <div class="order-row">
+        <div class="order-info">
+          <b>${escapeHtml(o.planName || 'Plan')} — ${o.planCurrency || '৳'}${o.amount}</b>
+          <small>
+            <i class="fas fa-mobile-alt"></i> ${escapeHtml((o.paymentMethod || '').toUpperCase())} • TrxID: <b>${escapeHtml(o.trxId)}</b><br>
+            <i class="fas fa-clock"></i> ${formatDateTime(o.createdAt)}
+            ${o.adminNote ? '<br><i class="fas fa-comment"></i> Admin: ' + escapeHtml(o.adminNote) : ''}
+          </small>
+        </div>
+        <div><span class="status-pill ${o.status}">${o.status}</span></div>
+      </div>`).join('');
+  } catch (e) {
+    wrap.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Load failed</h3><p>${escapeHtml(e.message)}</p></div>`;
+  }
+}
+$('refreshOrdersBtn').addEventListener('click', loadUserOrders);
+
+/* ---------- USER IMAGES ---------- */
+async function loadUserImages() {
+  if (!currentUser) return;
+  try {
+    let images = [];
+    try {
+      const snap = await db.collection('images').where('userId', '==', currentUser.uid).orderBy('uploadedAt', 'desc').get();
+      snap.forEach(d => {
+        const data = d.data();
+        let ua = data.uploadedAt;
+        if (ua && ua.toDate) ua = ua.toDate().toISOString();
+        else if (!ua) ua = new Date().toISOString();
+        if (data.fileSizeBytes == null && data.fileSize) {
+          data.fileSizeBytes = parseSizeToBytes(data.fileSize);
+        }
+        images.push({ id: d.id, ...data, uploadedAt: ua });
+      });
+    } catch (e) {
+      console.warn('orderBy failed, fallback:', e.message);
+      const snap = await db.collection('images').where('userId', '==', currentUser.uid).get();
+      snap.forEach(d => {
+        const data = d.data();
+        if (data.fileSizeBytes == null && data.fileSize) {
+          data.fileSizeBytes = parseSizeToBytes(data.fileSize);
+        }
+        images.push({ id: d.id, ...data, uploadedAt: data.uploadedAt?.toDate?.().toISOString() || new Date().toISOString() });
+      });
+      images.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
+    }
+    userImages = images;
+  } catch (e) {
+    console.error('loadUserImages error:', e);
+    userImages = [];
+  }
+  updateStats();
+  if ($('tab-gallery').classList.contains('active')) displayGalleryImages();
+}
+function parseSizeToBytes(str) {
+  if (!str) return 0;
+  const m = String(str).trim().match(/^([\d.]+)\s*(Bytes|KB|MB|GB)?$/i);
+  if (!m) return 0;
+  const val = parseFloat(m[1]) || 0;
+  const unit = (m[2] || 'Bytes').toLowerCase();
+  if (unit === 'kb') return val * 1024;
+  if (unit === 'mb') return val * 1024 * 1024;
+  if (unit === 'gb') return val * 1024 * 1024 * 1024;
+  return val;
+}
+function updateStats() {
+  const today = new Date().toDateString();
+  let todayCount = 0, totalViews = 0, totalBytes = 0;
+  userImages.forEach(img => {
+    if (img.uploadedAt) { try { if (new Date(img.uploadedAt).toDateString() === today) todayCount++; } catch (_) { } }
+    totalViews += img.views || 0;
+    totalBytes += img.fileSizeBytes || 0;
+  });
+  $('totalImages').textContent = userImages.length;
+  $('todayUploads').textContent = todayCount;
+  $('storageUsed').textContent = totalBytes ? formatFileSize(totalBytes) : '0 MB';
+  $('totalViews').textContent = totalViews;
+}
+
+/* ---------- TABS ---------- */
+function switchTab(name) {
+  document.querySelectorAll('.app-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
+  if (name === 'gallery') displayGalleryImages();
+  if (name === 'orders') loadUserOrders();
+  if (name === 'upgrade') renderUserPlanCards();
+}
+document.querySelectorAll('.app-tab').forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+
+/* =========================================================
+   UPLOAD SYSTEM
+   ========================================================= */
+const uploadArea = $('uploadArea'), fileInput = $('fileInput'), browseBtn = $('browseBtn');
+const previewContainer = $('previewContainer'), previewImage = $('previewImage');
+const uploadBtn = $('uploadBtn'), resetBtn = $('resetBtn'), uploadResult = $('uploadResult');
+const sizeSlider = $('sizeSlider'), sizeValue = $('sizeValue'), qualitySelect = $('qualitySelect');
+const applySizeBtn = $('applySizeBtn'), resetSizeBtn = $('resetSizeBtn');
+const originalSizeEl = $('originalSize'), estimatedSizeEl = $('estimatedSize'), savedSizeEl = $('savedSize');
+const presetBtns = document.querySelectorAll('.preset-btn');
+
+browseBtn.addEventListener('click', e => { e.stopPropagation(); fileInput.click(); });
+uploadArea.addEventListener('click', e => {
+  if (e.target.closest('#browseBtn')) return;
+  fileInput.click();
+});
+
+uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('drag'); });
+uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag'));
+
+uploadArea.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadArea.classList.remove('drag');
+  const dropped = e.dataTransfer?.files;
+  if (!dropped || !dropped.length) return;
+  try {
+    const dt = new DataTransfer();
+    for (const f of dropped) dt.items.add(f);
+    fileInput.files = dt.files;
+    handleFiles(Array.from(fileInput.files));
+  } catch (err) {
+    console.warn('DataTransfer failed, using direct queue:', err);
+    handleFiles(Array.from(dropped));
+  }
+});
+
+fileInput.addEventListener('change', (e) => {
+  console.log('🔥 fileInput change event fired');
+  console.log('   files.length:', e.target.files?.length || 0);
+  if (e.target.files && e.target.files.length) {
+    console.log('   files:', Array.from(e.target.files).map(f => f.name + ' (' + f.size + ' bytes)'));
+  }
+  handleFiles(Array.from(e.target.files || []));
+});
+
+function handleFiles(files) {
+  console.log('📁 handleFiles called with', files.length, 'files');
+  if (!files.length) {
+    toast('warn', 'No file detected', 'Please try again or use Browse Files button.');
+    return;
+  }
+
+  const maxMB = parseInt($('maxFileSize')?.value) || 32;
+  const maxBytes = maxMB * 1024 * 1024;
+
+  uploadQueue = [];
+  activeQueueIdx = 0;
+  const strip = $('thumbStrip');
+  strip.innerHTML = '';
+
+  let validCount = 0;
+
+  files.forEach(f => {
+    if (!f.type || !f.type.match('image.*')) {
+      toast('error', 'Skipped', `${f.name} is not an image.`);
+      return;
+    }
+    if (f.size > maxBytes) {
+      toast('error', 'Too large', `${f.name} exceeds ${maxMB}MB.`);
+      return;
+    }
+
+    const idx = uploadQueue.length;
+    uploadQueue.push({
+      file: f,
+      resizedBlob: null,
+      originalDataUrl: null,
+      dimensions: null,
+      originalWidth: null,
+      originalHeight: null,
+      resizedWidth: null,
+      resizedHeight: null
+    });
+
+    const div = document.createElement('div');
+    div.className = 'thumb-item' + (idx === 0 ? ' active' : '');
+    div.dataset.idx = idx;
+    div.innerHTML = `<img src="${URL.createObjectURL(f)}" alt="">`;
+    div.onclick = () => {
+      strip.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+      div.classList.add('active');
+      loadFileIntoPreview(idx);
+    };
+    strip.appendChild(div);
+    validCount++;
+  });
+
+  if (validCount === 0) {
+    toast('warn', 'No valid files', 'None of the selected files could be queued.');
+    return;
+  }
+
+  loadFileIntoPreview(0);
+  toast('info', 'Files queued', `${validCount} file${validCount > 1 ? 's' : ''} ready.`);
+}
+
+function loadFileIntoPreview(idx) {
+  activeQueueIdx = idx;
+  const item = uploadQueue[idx];
+  if (!item) return;
+
+  const file = item.file;
+  currentFile = file;
+  originalFile = file;
+  resizedBlob = item.resizedBlob;
+
+  const r = new FileReader();
+  r.onload = ev => {
+    item.originalDataUrl = ev.target.result;
+    originalDataUrl = item.originalDataUrl;
+
+    previewImage.src = item.resizedBlob
+      ? URL.createObjectURL(item.resizedBlob)
+      : originalDataUrl;
+    show(previewContainer);
+
+    $('fileName').textContent = file.name;
+    $('fileSize').textContent = formatFileSize(item.resizedBlob ? item.resizedBlob.size : file.size);
+    $('fileType').textContent = (file.type.split('/')[1] || '').toUpperCase();
+    originalSizeEl.textContent = formatFileSize(file.size);
+
+    const img = new Image();
+    img.onload = () => {
+      const dimText = `${img.width} × ${img.height}`;
+      $('fileDimensions').textContent = dimText;
+      item.originalWidth = img.width;
+      item.originalHeight = img.height;
+      if (!item.dimensions) item.dimensions = dimText;
+    };
+    img.onerror = () => {
+      $('fileDimensions').textContent = 'unknown';
+      if (!item.dimensions) item.dimensions = 'unknown';
+    };
+    img.src = ev.target.result;
+
+    sizeSlider.value = 80;
+    sizeValue.textContent = '80%';
+    updatePreset(80);
+    qualitySelect.value = '0.8';
+    updateEstimatedSize(80);
+  };
+  r.readAsDataURL(file);
+}
+
+presetBtns.forEach(b => b.addEventListener('click', () => {
+  const s = parseInt(b.dataset.size);
+  sizeSlider.value = s;
+  sizeValue.textContent = s + '%';
+  updatePreset(s);
+  updateEstimatedSize(s);
+}));
+sizeSlider.addEventListener('input', () => {
+  const v = sizeSlider.value;
+  sizeValue.textContent = v + '%';
+  updatePreset(v);
+  updateEstimatedSize(v);
+});
+qualitySelect.addEventListener('change', () => { if (originalFile) updateEstimatedSize(sizeSlider.value); });
+function updatePreset(v) { presetBtns.forEach(b => b.classList.toggle('active', parseInt(b.dataset.size) === parseInt(v))); }
+function updateEstimatedSize(pct) {
+  if (!originalFile) return;
+  const q = parseFloat(qualitySelect.value), bytes = originalFile.size;
+  const est = Math.round(bytes * (pct / 100) * (pct / 100) * q);
+  estimatedSizeEl.textContent = formatFileSize(est);
+  savedSizeEl.textContent = formatFileSize(Math.max(0, bytes - est));
+}
+function resizeImage(dataUrl, pct, quality, mimeType) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const c = document.createElement('canvas'), ctx = c.getContext('2d');
+        const s = pct / 100, w = Math.max(1, Math.round(img.width * s)), h = Math.max(1, Math.round(img.height * s));
+        c.width = w; c.height = h;
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, w, h);
+        const outType = (mimeType === 'image/png' || mimeType === 'image/webp') ? mimeType : 'image/jpeg';
+        c.toBlob(
+          b => b ? resolve({ blob: b, width: w, height: h }) : reject(new Error('Canvas toBlob failed')),
+          outType,
+          quality
+        );
+      } catch (e) { reject(e); }
+    };
+    img.onerror = () => reject(new Error('Image load failed'));
+    img.src = dataUrl;
+  });
+}
+applySizeBtn.addEventListener('click', async () => {
+  if (!originalDataUrl) { toast('warn', 'No image', 'Select an image.'); return; }
+  const pct = parseInt(sizeSlider.value), q = parseFloat(qualitySelect.value);
+  if (pct >= 100) { toast('warn', 'Already original', 'Use lower %.'); return; }
+  try {
+    applySizeBtn.disabled = true;
+    applySizeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    const r = await resizeImage(originalDataUrl, pct, q, currentFile.type);
+    resizedBlob = r.blob;
+    const item = uploadQueue[activeQueueIdx];
+    item.resizedBlob = r.blob;
+    item.resizedWidth = r.width;
+    item.resizedHeight = r.height;
+    item.dimensions = `${r.width} × ${r.height}`;
+
+    previewImage.src = URL.createObjectURL(r.blob);
+    $('fileSize').textContent = formatFileSize(r.blob.size);
+    $('fileDimensions').textContent = `${r.width} × ${r.height}`;
+    const saved = originalFile.size - r.blob.size;
+    savedSizeEl.textContent = formatFileSize(Math.max(0, saved));
+    estimatedSizeEl.textContent = formatFileSize(r.blob.size);
+    toast('success', 'Applied', `New size: ${formatFileSize(r.blob.size)}`);
+  } catch (e) {
+    toast('error', 'Failed', e.message);
+  } finally {
+    applySizeBtn.disabled = false;
+    applySizeBtn.innerHTML = '<i class="fas fa-check"></i> Apply reduction';
+  }
+});
+resetSizeBtn.addEventListener('click', () => {
+  if (!originalDataUrl) return;
+  previewImage.src = originalDataUrl;
+  resizedBlob = null;
+  const item = uploadQueue[activeQueueIdx];
+  item.resizedBlob = null;
+  delete item.resizedWidth;
+  delete item.resizedHeight;
+  if (item.originalWidth && item.originalHeight) {
+    item.dimensions = `${item.originalWidth} × ${item.originalHeight}`;
+  }
+  $('fileSize').textContent = formatFileSize(originalFile.size);
+  const img = new Image();
+  img.onload = () => { $('fileDimensions').textContent = `${img.width} × ${img.height}`; };
+  img.src = originalDataUrl;
+  sizeSlider.value = 100;
+  sizeValue.textContent = '100%';
+  updatePreset(100);
+  estimatedSizeEl.textContent = formatFileSize(originalFile.size);
+  savedSizeEl.textContent = '0 KB';
+});
+resetBtn.addEventListener('click', () => {
+  fileInput.value = '';
+  hide(previewContainer);
+  $('imageTitle').value = '';
+  $('imageDescription').value = '';
+  $('imageCategory').value = 'general';
+  uploadResult.innerHTML = '';
+  currentFile = originalFile = resizedBlob = originalDataUrl = null;
+  uploadQueue = [];
+  activeQueueIdx = 0;
+  sizeSlider.value = 80;
+  sizeValue.textContent = '80%';
+  qualitySelect.value = '0.8';
+  updatePreset(80);
+  originalSizeEl.textContent = estimatedSizeEl.textContent = savedSizeEl.textContent = '0 KB';
+  $('thumbStrip').innerHTML = '';
+  $('fileName').textContent = '-';
+  $('fileSize').textContent = '-';
+  $('fileDimensions').textContent = '-';
+  $('fileType').textContent = '-';
+});
+
+/* ---------- UPLOAD ALL ---------- */
+uploadBtn.addEventListener('click', async () => {
+  console.log('%c🚀 UPLOAD STARTED', 'color:#3b82f6;font-weight:bold;font-size:14px');
+  console.log('  User:', currentUser?.email, '| Queue:', uploadQueue.length);
+
+  if (!currentUser) { toast('error', 'Not signed in', 'Sign in first.'); return; }
+  if (!uploadQueue.length) { toast('warn', 'No file', 'Select at least one image.'); return; }
+  if (isUploading) { toast('warn', 'Please wait', 'Upload already in progress.'); return; }
+
+  try {
+    const testRef = db.collection('_ping').doc(currentUser.uid);
+    await testRef.set({ t: Date.now() });
+    await testRef.delete();
+    console.log('  ✅ Firestore write OK');
+  } catch (e) {
+    console.error('  ❌ Firestore write blocked:', e.message);
+    toast('error', 'Database blocked', 'Check Firestore security rules.');
+    return;
+  }
+
+  const baseTitle = $('imageTitle').value.trim();
+  const description = $('imageDescription').value.trim();
+  const category = $('imageCategory').value;
+
+  isUploading = true;
+  uploadBtn.disabled = true;
+  const total = uploadQueue.length;
+  let done = 0, failed = 0;
+  const errors = [];
+
+  for (let i = 0; i < uploadQueue.length; i++) {
+    const item = uploadQueue[i];
+    const file = item.resizedBlob || item.file;
+
+    uploadBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Uploading ${i + 1}/${total}...`;
+    console.log(`\n%c[${i + 1}/${total}] ${item.file.name}`, 'color:#f59e0b;font-weight:bold');
+
+    try {
+      console.log('  → ImgBB...');
+      const imgbbResult = await uploadToImgbb(file, item.file.name);
+      console.log('  ✅ URL:', imgbbResult.url);
+
+      const fileTitle = baseTitle
+        ? (total > 1 ? `${baseTitle} (${i + 1})` : baseTitle)
+        : (item.file.name.replace(/\.[^.]+$/, '') || 'Untitled');
+
+      const dimText = item.dimensions
+        || `${item.resizedWidth || item.originalWidth || '?'} × ${item.resizedHeight || item.originalHeight || '?'}`;
+
+      const imageData = {
+        userId: currentUser.uid,
+        userEmail: currentUser.email,
+        title: fileTitle,
+        description,
+        category,
+        imageUrl: imgbbResult.url,
+        thumbUrl: imgbbResult.thumbUrl,
+        mediumUrl: imgbbResult.mediumUrl,
+        deleteUrl: imgbbResult.deleteUrl,
+        uploadedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        fileSize: formatFileSize(file.size),
+        fileSizeBytes: file.size,
+        originalSize: item.file ? formatFileSize(item.file.size) : null,
+        dimensions: dimText,
+        width: item.resizedWidth || item.originalWidth || null,
+        height: item.resizedHeight || item.originalHeight || null,
+        originalWidth: item.originalWidth || null,
+        originalHeight: item.originalHeight || null,
+        views: 0,
+        isPublic: false,
+        wasResized: !!item.resizedBlob
+      };
+
+      console.log('  → Firestore...');
+      const ref = await db.collection('images').add(imageData);
+      console.log('  ✅ doc:', ref.id);
+
+      userImages.unshift({ id: ref.id, ...imageData, uploadedAt: new Date().toISOString() });
+      done++;
+      document.querySelector(`.thumb-item[data-idx="${i}"]`)?.classList.add('uploaded');
+
+    } catch (err) {
+      failed++;
+      console.error(`  ❌ [${item.file.name}]`, err);
+      let msg = err.message || 'Unknown error';
+      if (msg.includes('Missing or insufficient permissions')) msg = 'Firestore permission denied.';
+      else if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) msg = 'Network error.';
+      else if (msg.includes('rate limit')) msg = 'ImgBB rate limit.';
+      else if (msg.includes('timeout')) msg = 'Timeout.';
+      errors.push(`${item.file.name}: ${msg}`);
+      document.querySelector(`.thumb-item[data-idx="${i}"]`)?.classList.add('failed');
+    }
+  }
+
+  updateStats();
+  isUploading = false;
+  uploadBtn.disabled = false;
+  uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload to PIXORA';
+
+  console.log(`%c✅ ${done} success, ${failed} failed`, 'color:#10b981;font-weight:bold');
+
+  if (failed === 0) {
+    uploadResult.innerHTML = `
+      <div style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);color:#6ee7b7;padding:20px;border-radius:14px">
+        <h4 style="margin-bottom:12px"><i class="fas fa-check-circle"></i> ${done} image${done > 1 ? 's' : ''} uploaded!</h4>
+        <button class="btn btn-sm" onclick="switchTab('gallery')"><i class="fas fa-th"></i> Open Gallery</button>
+      </div>`;
+    toast('success', 'Uploaded', `${done} image${done > 1 ? 's' : ''} saved.`);
+    setTimeout(() => resetBtn.click(), 2000);
+  } else {
+    uploadResult.innerHTML = `
+      <div style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#fca5a5;padding:20px;border-radius:14px">
+        <h4 style="margin-bottom:10px"><i class="fas fa-exclamation-triangle"></i> Success: ${done} • Failed: ${failed}</h4>
+        <ul style="margin-left:18px;line-height:1.8;font-size:13px">
+          ${errors.map(e => `<li>${escapeHtml(e)}</li>`).join('')}
+        </ul>
+      </div>`;
+    toast('error', 'Upload failed', `${failed} image(s) failed.`);
+  }
+});
+
+/* ---------- GALLERY ---------- */
+function displayGalleryImages() {
+  const c = $('galleryContainer');
+  c.innerHTML = '';
+  if (!userImages.length) {
+    c.innerHTML = `<div class="empty-state"><i class="fas fa-images"></i><h3>No images yet</h3><p>Upload your first image!</p></div>`;
+    return;
+  }
+  userImages.forEach(img => {
+    const el = document.createElement('div');
+    el.className = 'gallery-item';
+    el.dataset.category = img.category || 'general';
+    el.dataset.title = (img.title || '').toLowerCase();
+    el.dataset.desc = (img.description || '').toLowerCase();
+    const src = img.thumbUrl || img.imageUrl;
+    el.innerHTML = `
+      <div class="gallery-thumb">
+        <img src="${src}" alt="${escapeHtml(img.title || 'Image')}" loading="lazy">
+        <div class="gallery-overlay">
+          <button class="overlay-btn" title="Expand"><i class="fas fa-expand"></i></button>
+          <button class="overlay-btn" data-act="copy" title="Copy URL"><i class="fas fa-link"></i></button>
+          <button class="overlay-btn" data-act="download" title="Download"><i class="fas fa-download"></i></button>
+        </div>
+      </div>
+      <div class="gallery-info">
+        <div class="gallery-title">${escapeHtml(img.title || 'Untitled')}</div>
+        <div class="gallery-desc">${escapeHtml(img.description || 'No description')}</div>
+        <div class="gallery-meta">
+          <span class="badge">${escapeHtml(img.category || 'general')}</span>
+          <span>${formatDate(img.uploadedAt)}</span>
+        </div>
+      </div>`;
+    el.querySelector('.gallery-thumb').addEventListener('click', e => {
+      const act = e.target.closest('[data-act]')?.dataset.act;
+      if (act === 'copy') { e.stopPropagation(); copyText(img.imageUrl); return; }
+      if (act === 'download') { e.stopPropagation(); downloadImage(img.imageUrl, img.title); return; }
+      openLightbox(img.imageUrl);
+    });
+    el.querySelector('.gallery-info').addEventListener('click', () => openImageModal(img));
+    c.appendChild(el);
+  });
+}
+function openLightbox(url) {
+  $('lightboxImg').src = url;
+  $('lightbox').classList.add('active');
+}
+$('lightboxClose').onclick = () => $('lightbox').classList.remove('active');
+$('lightbox').onclick = e => { if (e.target.id === 'lightbox') e.currentTarget.classList.remove('active'); };
+
+function openImageModal(img) {
+  activeImage = img;
+  $('modalImage').src = img.imageUrl || img.thumbUrl;
+  $('modalImageTitle').textContent = img.title || 'Image details';
+  $('modalTitle').textContent = img.title || 'Untitled';
+  $('modalDescription').textContent = img.description || 'No description';
+  $('modalCategory').textContent = img.category || 'general';
+  $('modalDate').textContent = formatDate(img.uploadedAt);
+  $('modalDimensions').textContent = img.dimensions || 'Unknown';
+  $('modalSize').textContent = img.fileSize || 'Unknown';
+  $('imageModal').classList.add('active');
+  if (img.id && currentUser && img.userId !== currentUser.uid) {
+    db.collection('images').doc(img.id).update({ views: firebase.firestore.FieldValue.increment(1) }).catch(() => { });
+  }
+}
+$('modalClose').onclick = () => $('imageModal').classList.remove('active');
+$('imageModal').onclick = e => { if (e.target.id === 'imageModal') e.currentTarget.classList.remove('active'); };
+$('copyUrlBtn').onclick = () => { if (activeImage) copyText(activeImage.imageUrl); };
+$('downloadBtn').onclick = () => { if (activeImage) downloadImage(activeImage.imageUrl, activeImage.title); };
+$('deleteBtn').onclick = async () => {
+  if (!activeImage) return;
+  if (!confirm('Delete this image?')) return;
+  try {
+    await db.collection('images').doc(activeImage.id).delete();
+    userImages = userImages.filter(i => i.id !== activeImage.id);
+    $('imageModal').classList.remove('active');
+    displayGalleryImages();
+    updateStats();
+    toast('success', 'Deleted', 'Image removed.');
+  } catch (e) { toast('error', 'Delete failed', e.message); }
+};
+$('editBtn').onclick = () => {
+  if (!activeImage) return;
+  $('editTitle').value = activeImage.title || '';
+  $('editDescription').value = activeImage.description || '';
+  $('editCategory').value = activeImage.category || 'general';
+  $('imageModal').classList.remove('active');
+  $('editModal').classList.add('active');
+};
+$('editModalClose').onclick = () => $('editModal').classList.remove('active');
+$('cancelEdit').onclick = () => $('editModal').classList.remove('active');
+$('saveEdit').onclick = async () => {
+  if (!activeImage) return;
+  const upd = {
+    title: $('editTitle').value.trim() || 'Untitled',
+    description: $('editDescription').value.trim(),
+    category: $('editCategory').value
+  };
+  try {
+    await db.collection('images').doc(activeImage.id).update(upd);
+    const i = userImages.findIndex(x => x.id === activeImage.id);
+    if (i > -1) userImages[i] = { ...userImages[i], ...upd };
+    $('editModal').classList.remove('active');
+    displayGalleryImages();
+    toast('success', 'Saved', 'Updated.');
+  } catch (e) { toast('error', 'Failed', e.message); }
+};
+function downloadImage(url, title) {
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = (title || 'pixora-image').replace(/[^\w.-]+/g, '_');
+  a.target = '_blank';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+$('categoryFilter').addEventListener('change', e => {
+  const cat = e.target.value;
+  document.querySelectorAll('.gallery-item').forEach(it => {
+    it.style.display = (cat === 'all' || it.dataset.category === cat) ? '' : 'none';
+  });
+});
+$('searchInput').addEventListener('input', e => {
+  const q = e.target.value.toLowerCase().trim();
+  document.querySelectorAll('.gallery-item').forEach(it => {
+    const ok = !q || it.dataset.title.includes(q) || it.dataset.desc.includes(q);
+    it.style.display = ok ? '' : 'none';
+  });
+});
+$('refreshGalleryBtn').addEventListener('click', async () => {
+  const b = $('refreshGalleryBtn'); b.disabled = true; const o = b.innerHTML;
+  b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing';
+  await loadUserImages();
+  b.innerHTML = o;
+  b.disabled = false;
+  toast('info', 'Refreshed', 'Gallery reloaded.');
+});
+
+/* ---------- SHARE ---------- */
+$('genPublicLink').addEventListener('click', () => {
+  if (!currentUser) return;
+  $('publicLink').value = `${location.origin}${location.pathname}?u=${currentUser.uid}`;
+  toast('success', 'Link generated', 'Share it anywhere.');
+});
+$('copyPublicLink').addEventListener('click', () => {
+  const v = $('publicLink').value;
+  if (!v) { toast('warn', 'No link', 'Generate first.'); return; }
+  copyText(v);
+});
+
+/* ---------- SETTINGS ---------- */
+$('saveSettings').addEventListener('click', async () => {
+  if (!currentUser) return;
+  const name = $('setName').value.trim(), maxMB = parseInt($('maxFileSize').value) || 32;
+  if (!name) { toast('warn', 'Name required', 'Enter a display name.'); return; }
+  if (maxMB < 1 || maxMB > 32) { toast('warn', 'Invalid size', 'Max file size must be 1-32 MB.'); return; }
+  try {
+    await db.collection('users').doc(currentUser.uid).set({
+      name,
+      settings: { maxFileSize: maxMB }
+    }, { merge: true });
+    if (name && name !== currentUser.displayName) {
+      try { await currentUser.updateProfile({ displayName: name }); } catch (_) { }
+    }
+    userProfile.name = name;
+    $('userName').textContent = name;
+    toast('success', 'Saved', 'Settings updated.');
+  } catch (e) { toast('error', 'Save failed', e.message); }
+});
+$('changePwdBtn').addEventListener('click', async () => {
+  if (!currentUser) return;
+  try {
+    await auth.sendPasswordResetEmail(currentUser.email);
+    toast('success', 'Email sent', 'Check inbox.');
+  }
+  catch (e) { toast('error', 'Failed', e.message); }
+});
+$('deleteAccountBtn').addEventListener('click', async () => {
+  if (!confirm('Delete account? Cannot be undone.')) return;
+  if (!confirm('Are you REALLY sure?')) return;
+  try {
+    await db.collection('users').doc(currentUser.uid).delete().catch(() => { });
+    await currentUser.delete();
+    toast('info', 'Deleted', 'Goodbye.');
+  } catch (e) {
+    toast('error', 'Action required', 'Sign out and back in, then retry.');
+  }
+});
+
+/* ---------- KEYBOARD ---------- */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal.active,.lightbox.active').forEach(m => m.classList.remove('active'));
+});
+
+console.log('%cPIXORA','color:#3b82f6;font-weight:900;font-size:22px;padding:6px 12px;background:#0b1220;border-radius:6px');
+console.log('%cDesigned & Developed by Md. Ashfaqur Rahman Tanim → https://rovermdashfaq.github.io/portfolio/','color:#94a3b8;font-size:13px');
+</script>
+</body>
+</html>
