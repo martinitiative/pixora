@@ -1,15 +1,14 @@
 {
-  "name": "PIXORA — Your images. Your space.",
+  "name": "PIXORA — Your Images. Your Space.",
   "short_name": "PIXORA",
-  "description": "Upload, compress, organize and share your images.",
-  "start_url": "/pixora",
-  "scope": "/",
+  "description": "Upload, compress, organize and share your images beautifully.",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#070b14",
   "theme_color": "#070b14",
   "lang": "en",
-  "dir": "ltr",
   "categories": ["photo", "productivity", "utilities"],
   "icons": [
     {
@@ -35,13 +34,15 @@
     {
       "name": "Upload Image",
       "short_name": "Upload",
-      "url": "/?action=upload",
+      "description": "Upload a new image",
+      "url": "./index.html?action=upload",
       "icons": [{ "src": "https://i.ibb.co/jP5Nmvgw/file-00000000031882119d721429cf3de75c.png", "sizes": "192x192" }]
     },
     {
       "name": "My Gallery",
       "short_name": "Gallery",
-      "url": "/?action=gallery",
+      "description": "Open my gallery",
+      "url": "./index.html?action=gallery",
       "icons": [{ "src": "https://i.ibb.co/jP5Nmvgw/file-00000000031882119d721429cf3de75c.png", "sizes": "192x192" }]
     }
   ]
