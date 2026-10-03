@@ -2,7 +2,7 @@
    PIXORA Service Worker — Offline Support & Caching
    ========================================================= */
 
-const CACHE_NAME = 'pixora-v1.0.2';
+const CACHE_NAME = 'pixora-v1.0.3';
 const RUNTIME_CACHE = 'pixora-runtime-v1';
 
 const PRECACHE_URLS = [
