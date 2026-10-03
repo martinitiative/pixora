@@ -1,0 +1,48 @@
+{
+  "name": "PIXORA — Your images. Your space.",
+  "short_name": "PIXORA",
+  "description": "Upload, compress, organize and share your images.",
+  "start_url": "/pixora",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#070b14",
+  "theme_color": "#070b14",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["photo", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "https://i.ibb.co/jP5Nmvgw/file-00000000031882119d721429cf3de75c.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://i.ibb.co/jP5Nmvgw/file-00000000031882119d721429cf3de75c.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://i.ibb.co/jP5Nmvgw/file-00000000031882119d721429cf3de75c.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Upload Image",
+      "short_name": "Upload",
+      "url": "/?action=upload",
+      "icons": [{ "src": "https://i.ibb.co/jP5Nmvgw/file-00000000031882119d721429cf3de75c.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "My Gallery",
+      "short_name": "Gallery",
+      "url": "/?action=gallery",
+      "icons": [{ "src": "https://i.ibb.co/jP5Nmvgw/file-00000000031882119d721429cf3de75c.png", "sizes": "192x192" }]
+    }
+  ]
+}
