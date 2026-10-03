@@ -6,6 +6,16 @@
 <title>PIXORA — Your images. Your space.</title>
 <meta name="description" content="PIXORA — Upload, compress, organize and share your images.">
 <meta name="theme-color" content="#070b14">
+  <!-- ===== PWA Meta ===== -->
+<meta name="theme-color" content="#070b14">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PIXORA">
+<meta name="application-name" content="PIXORA">
+<meta name="msapplication-TileColor" content="#070b14">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://i.ibb.co/jP5Nmvgw/file-00000000031882119d721429cf3de75c.png">
 <link rel="icon" type="image/png" href="https://i.ibb.co/jP5Nmvgw/file-00000000031882119d721429cf3de75c.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -499,6 +509,34 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
 <div class="toast-wrap" id="toastWrap"></div>
 <button class="back-top" id="backTop"><i class="fas fa-arrow-up"></i></button>
+  <!-- PWA Install Banner -->
+<div id="pwaInstallBanner" style="display:none;position:fixed;bottom:20px;left:20px;right:20px;max-width:420px;
+  margin:0 auto;background:linear-gradient(135deg,rgba(15,23,42,.95),rgba(11,18,32,.95));
+  border:1px solid rgba(59,130,246,.35);border-radius:16px;padding:16px 20px;z-index:9999;
+  backdrop-filter:blur(20px);box-shadow:0 20px 45px rgba(0,0,0,.6),0 0 25px rgba(59,130,246,.25);
+  align-items:center;gap:14px;animation:slideUpPWA .4s ease">
+  <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px;color:#fff">
+    <i class="fas fa-download"></i>
+  </div>
+  <div style="flex:1;min-width:0">
+    <div style="font-weight:700;font-size:14.5px;margin-bottom:2px">Install PIXORA</div>
+    <div style="color:var(--text-muted);font-size:12.5px;line-height:1.4">Add to your home screen for quick access & offline use.</div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
+    <button id="pwaInstallBtn" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6);border:none;color:#fff;
+      padding:8px 16px;border-radius:8px;font-weight:600;font-size:12.5px;cursor:pointer;font-family:inherit">
+      Install
+    </button>
+    <button id="pwaDismissBtn" style="background:transparent;border:none;color:var(--text-dim);
+      font-size:11.5px;cursor:pointer;font-family:inherit;padding:2px">Not now</button>
+  </div>
+</div>
+
+<style>
+@keyframes slideUpPWA{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+#pwaInstallBanner.show{display:flex!important}
+</style>
 
 <!-- ==================== PUBLIC SITE ==================== -->
 <div id="publicSite">
@@ -2287,6 +2325,77 @@ document.addEventListener('keydown', e => {
 
 console.log('%cPIXORA','color:#3b82f6;font-weight:900;font-size:22px;padding:6px 12px;background:#0b1220;border-radius:6px');
 console.log('%cDesigned & Developed by Md. Ashfaqur Rahman Tanim → https://rovermdashfaq.github.io/portfolio/','color:#94a3b8;font-size:13px');
+  /* =========================================================
+   PWA — Service Worker + Install Prompt
+   ========================================================= */
+let deferredPrompt = null;
+const pwaBanner = document.getElementById('pwaInstallBanner');
+const pwaInstallBtn = document.getElementById('pwaInstallBtn');
+const pwaDismissBtn = document.getElementById('pwaDismissBtn');
+
+// Register service worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js', { scope: './' })
+      .then(reg => console.log('✅ Service Worker registered:', reg.scope))
+      .catch(err => console.warn('⚠️ SW registration failed:', err));
+  });
+}
+
+// Capture install prompt
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const dismissed = localStorage.getItem('pixora.pwa.dismissed');
+  const installed = localStorage.getItem('pixora.pwa.installed');
+  if (!dismissed && !installed && pwaBanner) {
+    setTimeout(() => pwaBanner.classList.add('show'), 3500);
+  }
+});
+
+// Install button click
+if (pwaInstallBtn) {
+  pwaInstallBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) {
+      toast('info', 'Already installed', 'PIXORA is already installed or not installable on this browser.');
+      pwaBanner.classList.remove('show');
+      return;
+    }
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log('PWA install outcome:', outcome);
+    if (outcome === 'accepted') {
+      localStorage.setItem('pixora.pwa.installed', '1');
+      toast('success', 'Installing...', 'PIXORA is being added to your device.');
+    }
+    deferredPrompt = null;
+    pwaBanner.classList.remove('show');
+  });
+}
+
+// Dismiss
+if (pwaDismissBtn) {
+  pwaDismissBtn.addEventListener('click', () => {
+    localStorage.setItem('pixora.pwa.dismissed', '1');
+    pwaBanner.classList.remove('show');
+  });
+}
+
+// Detect installed
+window.addEventListener('appinstalled', () => {
+  console.log('✅ PIXORA installed');
+  localStorage.setItem('pixora.pwa.installed', '1');
+  pwaBanner.classList.remove('show');
+  toast('success', 'Installed!', 'PIXORA has been added to your home screen.');
+});
+
+// Standalone mode detection
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+  || window.navigator.standalone === true;
+if (isStandalone) {
+  console.log('🚀 Running in standalone (app) mode');
+  document.body.classList.add('pwa-standalone');
+}
 </script>
 </body>
 </html>
