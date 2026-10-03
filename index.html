@@ -6,6 +6,14 @@
 <title>PIXORA — Your images. Your space.</title>
 <meta name="description" content="PIXORA — Upload, compress, organize and share your images.">
 <meta name="theme-color" content="#070b14">
+  <!-- PWA -->
+<link rel="manifest" href="/manifest.json">
+<meta name="application-name" content="PIXORA">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PIXORA">
+<link rel="apple-touch-icon" href="https://i.ibb.co/jP5Nmvgw/file-00000000031882119d721429cf3de75c.png">
 <link rel="icon" type="image/png" href="https://i.ibb.co/jP5Nmvgw/file-00000000031882119d721429cf3de75c.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -493,6 +501,30 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   .info-grid{grid-template-columns:1fr!important}
   .pay-form-grid{grid-template-columns:1fr!important}
 }
+  /* ============ PWA Install Button ============ */
+.install-btn{
+  background:linear-gradient(135deg,#10b981,#059669)!important;
+  box-shadow:0 4px 15px rgba(16,185,129,.4)!important;
+  animation:installPulse 2.5s ease-in-out infinite;
+}
+.install-btn:hover{
+  box-shadow:0 8px 25px rgba(16,185,129,.6)!important;
+}
+@keyframes installPulse{
+  0%,100%{transform:translateY(0);box-shadow:0 4px 15px rgba(16,185,129,.4)}
+  50%{transform:translateY(-2px);box-shadow:0 8px 22px rgba(16,185,129,.65)}
+}
+.ios-install-hint{
+  position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
+  background:var(--bg-elev);border:1px solid var(--border-highlight);
+  border-radius:16px;padding:18px 22px;max-width:340px;width:calc(100% - 32px);
+  box-shadow:var(--shadow-lg),0 0 30px rgba(59,130,246,.3);z-index:1500;
+  animation:slideUp .4s ease;display:flex;gap:14px;align-items:flex-start;
+}
+.ios-install-hint i{color:var(--primary);font-size:20px;flex-shrink:0;margin-top:2px}
+.ios-install-hint b{display:block;font-size:14.5px;margin-bottom:6px}
+.ios-install-hint p{color:var(--text-muted);font-size:13px;line-height:1.6;margin:0}
+.ios-install-hint button{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:18px;padding:0 0 0 6px;align-self:flex-start}
 </style>
 </head>
 <body>
@@ -517,10 +549,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         <a href="#" data-page="contact">Contact</a>
       </div>
       <div class="nav-cta">
-        <button class="btn btn-ghost btn-sm" onclick="openAuth('login')">Sign in</button>
-        <button class="btn btn-sm" onclick="openAuth('register')"><i class="fas fa-rocket"></i> Get started</button>
-        <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
-      </div>
+  <button class="btn btn-ghost btn-sm" onclick="openAuth('login')">Sign in</button>
+  <button class="btn btn-sm" onclick="openAuth('register')"><i class="fas fa-rocket"></i> Get started</button>
+  <button class="btn btn-sm install-btn hidden" id="installBtn" title="Install PIXORA app">
+    <i class="fas fa-download"></i> Install App
+  </button>
+  <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+</div>
     </div>
   </nav>
 
@@ -2287,6 +2322,102 @@ document.addEventListener('keydown', e => {
 
 console.log('%cPIXORA','color:#3b82f6;font-weight:900;font-size:22px;padding:6px 12px;background:#0b1220;border-radius:6px');
 console.log('%cDesigned & Developed by Md. Ashfaqur Rahman Tanim → https://rovermdashfaq.github.io/portfolio/','color:#94a3b8;font-size:13px');
+    /* =========================================================
+   PWA — Install & Service Worker
+   ========================================================= */
+let deferredPrompt = null;
+
+/* ---- Register Service Worker ---- */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
+      .then(reg => {
+        console.log('%c✅ Service Worker registered', 'color:#10b981;font-weight:bold');
+        setInterval(() => reg.update(), 60 * 60 * 1000);
+      })
+      .catch(err => {
+        console.warn('❌ Service Worker failed:', err.message);
+      });
+  });
+}
+
+/* ---- Capture install prompt ---- */
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  console.log('%c📲 PIXORA installable!', 'color:#10b981;font-weight:bold;font-size:14px');
+  const btn = document.getElementById('installBtn');
+  if (btn) btn.classList.remove('hidden');
+});
+
+/* ---- Install button click ---- */
+document.addEventListener('click', async (e) => {
+  if (!e.target.closest('#installBtn')) return;
+  if (!deferredPrompt) {
+    if (isIOS() && !window.navigator.standalone) {
+      showIOSInstallHint();
+    } else {
+      toast('info', 'Already installed', 'PIXORA is already on your device.');
+    }
+    return;
+  }
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  console.log('Install outcome:', outcome);
+  if (outcome === 'accepted') {
+    toast('success', 'Installing...', 'PIXORA is being added to your device.');
+  } else {
+    toast('info', 'Cancelled', 'You can install anytime from the menu.');
+  }
+  deferredPrompt = null;
+  document.getElementById('installBtn')?.classList.add('hidden');
+});
+
+/* ---- Installed ---- */
+window.addEventListener('appinstalled', () => {
+  console.log('%c🎉 PIXORA installed!', 'color:#10b981;font-weight:bold;font-size:15px');
+  toast('success', 'Installed!', 'PIXORA is now on your device.');
+  deferredPrompt = null;
+  document.getElementById('installBtn')?.classList.add('hidden');
+});
+
+/* ---- iOS helpers ---- */
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
+function showIOSInstallHint() {
+  if (sessionStorage.getItem('pixora.iosHintShown')) return;
+  sessionStorage.setItem('pixora.iosHintShown', '1');
+  const hint = document.createElement('div');
+  hint.className = 'ios-install-hint';
+  hint.innerHTML = `
+    <i class="fab fa-apple"></i>
+    <div style="flex:1">
+      <b>Install PIXORA on iPhone/iPad</b>
+      <p>Tap the <b>Share</b> button below, then select <b>"Add to Home Screen"</b>.</p>
+    </div>
+    <button onclick="this.parentElement.remove()" aria-label="Close">&times;</button>
+  `;
+  document.body.appendChild(hint);
+  setTimeout(() => hint.remove(), 12000);
+}
+
+/* ---- iOS: show install button after 5s ---- */
+if (isIOS() && !window.navigator.standalone) {
+  setTimeout(() => {
+    const btn = document.getElementById('installBtn');
+    if (btn) btn.classList.remove('hidden');
+  }, 5000);
+}
+
+/* ---- Online/Offline ---- */
+window.addEventListener('offline', () => {
+  toast('warn', 'You are offline', 'PIXORA will sync when you reconnect.');
+});
+window.addEventListener('online', () => {
+  toast('success', 'Back online', 'Connected to PIXORA.');
+});
 </script>
 </body>
 </html>
