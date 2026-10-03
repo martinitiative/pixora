@@ -1,15 +1,14 @@
-/* =========================================================
-   PIXORA Service Worker — Offline Support & Caching
-   ========================================================= */
-
-const CACHE_NAME = 'pixora-v1.0.5';
+/* PIXORA Service Worker — Offline caching + PWA install */
+const CACHE_NAME = 'pixora-v1.0.0';
 const RUNTIME_CACHE = 'pixora-runtime-v1';
+const IMAGE_CACHE = 'pixora-images-v1';
 
+/* Core assets to pre-cache (app shell) */
 const PRECACHE_URLS = [
-  '/',
-  '/index.html',
-  '/admin.html',
-  '/manifest.json',
+  './',
+  './index.html',
+  './admin.html',
+  './manifest.json',
   'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
   'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css',
@@ -20,97 +19,115 @@ const PRECACHE_URLS = [
   'https://i.ibb.co/jP5Nmvgw/file-00000000031882119d721429cf3de75c.png'
 ];
 
-/* ---------- INSTALL ---------- */
-self.addEventListener('install', event => {
+/* ---------- Install ---------- */
+self.addEventListener('install', (event) => {
   console.log('[SW] Installing...');
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      console.log('[SW] Precaching app shell');
-      return Promise.allSettled(
-        PRECACHE_URLS.map(url =>
-          cache.add(url).catch(err => console.warn('[SW] Skip:', url, err.message))
-        )
-      );
-    }).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(PRECACHE_URLS).catch(err => console.warn('[SW] Precache partial:', err)))
+      .then(() => self.skipWaiting())
   );
 });
 
-/* ---------- ACTIVATE ---------- */
-self.addEventListener('activate', event => {
+/* ---------- Activate ---------- */
+self.addEventListener('activate', (event) => {
   console.log('[SW] Activating...');
+  const validCaches = [CACHE_NAME, RUNTIME_CACHE, IMAGE_CACHE];
   event.waitUntil(
-    caches.keys().then(keys =>
+    caches.keys().then((names) =>
       Promise.all(
-        keys.filter(k => k !== CACHE_NAME && k !== RUNTIME_CACHE)
-            .map(k => { console.log('[SW] Deleting old cache:', k); return caches.delete(k); })
+        names.map((name) => {
+          if (!validCaches.includes(name)) {
+            console.log('[SW] Deleting old cache:', name);
+            return caches.delete(name);
+          }
+        })
       )
     ).then(() => self.clients.claim())
   );
 });
 
-/* ---------- FETCH ---------- */
-self.addEventListener('fetch', event => {
-  const req = event.request;
-  const url = new URL(req.url);
+/* ---------- Fetch ---------- */
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
 
-  if (req.method !== 'GET') return;
+  // Skip non-GET and Firebase/Firestore (must always hit network)
+  if (request.method !== 'GET') return;
+  if (url.hostname.includes('firestore.googleapis.com')) return;
+  if (url.hostname.includes('firebaseio.com')) return;
+  if (url.hostname.includes('identitytoolkit.googleapis.com')) return;
+  if (url.hostname.includes('securetoken.googleapis.com')) return;
+  if (url.hostname.includes('googleapis.com') && url.pathname.includes('/v1/')) return;
 
-  // Skip API calls — always network
-  if (
-    url.hostname.includes('firebase') ||
-    url.hostname.includes('identitytoolkit') ||
-    url.hostname.includes('firestore.googleapis.com') ||
-    url.hostname.includes('api.imgbb.com')
-  ) return;
-
-  // Navigation requests
-  if (req.mode === 'navigate') {
+  // HTML documents: Network-first
+  if (request.mode === 'navigate' || request.destination === 'document') {
     event.respondWith(
-      fetch(req)
-        .then(res => {
+      fetch(request)
+        .then((res) => {
           const copy = res.clone();
-          caches.open(CACHE_NAME).then(c => c.put(req, copy));
+          caches.open(CACHE_NAME).then((c) => c.put(request, copy));
           return res;
         })
-        .catch(() => caches.match('/index.html'))
+        .catch(() => caches.match(request).then((r) => r || caches.match('./index.html')))
     );
     return;
   }
 
-  // Same-origin — cache first
-  if (url.origin === self.location.origin) {
+  // Images: Cache-first
+  if (request.destination === 'image') {
     event.respondWith(
-      caches.match(req).then(cached => {
-        const fetchPromise = fetch(req).then(res => {
-          if (res && res.status === 200) {
-            const copy = res.clone();
-            caches.open(RUNTIME_CACHE).then(c => c.put(req, copy));
-          }
-          return res;
-        }).catch(() => cached);
-        return cached || fetchPromise;
+      caches.match(request).then((cached) => {
+        if (cached) return cached;
+        return fetch(request)
+          .then((res) => {
+            if (res && res.status === 200) {
+              const copy = res.clone();
+              caches.open(IMAGE_CACHE).then((c) => c.put(request, copy));
+            }
+            return res;
+          })
+          .catch(() => cached);
       })
     );
     return;
   }
 
-  // Third-party CDN — stale-while-revalidate
+  // CSS / JS / Fonts: Stale-while-revalidate
+  if (['style', 'script', 'font'].includes(request.destination)) {
+    event.respondWith(
+      caches.match(request).then((cached) => {
+        const network = fetch(request)
+          .then((res) => {
+            if (res && res.status === 200) {
+              const copy = res.clone();
+              caches.open(RUNTIME_CACHE).then((c) => c.put(request, copy));
+            }
+            return res;
+          })
+          .catch(() => cached);
+        return cached || network;
+      })
+    );
+    return;
+  }
+
+  // Everything else: network-first
   event.respondWith(
-    caches.match(req).then(cached => {
-      const fetchPromise = fetch(req).then(res => {
+    fetch(request)
+      .then((res) => {
         if (res && res.status === 200) {
           const copy = res.clone();
-          caches.open(RUNTIME_CACHE).then(c => c.put(req, copy));
+          caches.open(RUNTIME_CACHE).then((c) => c.put(request, copy));
         }
         return res;
-      }).catch(() => cached);
-      return cached || fetchPromise;
-    })
+      })
+      .catch(() => caches.match(request))
   );
 });
 
-/* ---------- MESSAGES ---------- */
-self.addEventListener('message', event => {
+/* ---------- Message (for skipWaiting) ---------- */
+self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
