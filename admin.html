@@ -6,6 +6,10 @@
 <title>PIXORA Admin — Control Panel</title>
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#070b14">
+  <link rel="manifest" href="/manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PIXORA Admin">
 <link rel="icon" type="image/png" href="https://i.ibb.co/jP5Nmvgw/file-00000000031882119d721429cf3de75c.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -953,6 +957,14 @@ document.querySelectorAll('.admin-tab').forEach(t=>{
 
 console.log('%cPIXORA ADMIN','color:#f59e0b;font-weight:900;font-size:22px;padding:6px 12px;background:#0b1220;border-radius:6px');
 console.log('%cDesigned & Developed by Md. Ashfaqur Rahman Tanim → https://rovermdashfaq.github.io/portfolio/','color:#94a3b8;font-size:13px');
+  /* ---- Service Worker for admin ---- */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
+      .then(() => console.log('✅ Admin SW registered'))
+      .catch(err => console.warn('Admin SW failed:', err.message));
+  });
+}
 </script>
 </body>
 </html>
